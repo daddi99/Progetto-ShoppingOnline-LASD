@@ -54,10 +54,12 @@ typedef struct nodoListaAmministratori
 //FUNZIONI PER L'INTERFACCIA
 //Si occupa di gestire la schermata di login/registrazione, e ritorna per riferimento l'utente/amministratore che ha fatto l'accesso
 int effettuaLogin(nodoListaUtenti* listaUtenti, nodoListaAmministratori* listaAmministratori,utente* utenteLoggato, amministratore* adminLoggato);
-nodoListaUtenti* effettuaRegistrazione(nodoListaUtenti* listaUtenti);
+nodoListaUtenti* effettuaRegistrazione(nodoListaUtenti* listaUtenti); //Dopo aver fatto tutti i controlli aggiunge il nuovo utente alla listaUtenti
+void latoUtente(utente* utenteLoggato,nodoListaUtenti** listaUtenti, nodoListaProdotti** listaProdotti);
 
 //FUNZIONI LISTA PRODOTTI
-void stampaListaProdotti(nodoListaProdotti* listaProdotti);
+void mostraListaProdotti(nodoListaProdotti* listaProdotti, int indice); //Stampa la lista sotto forma di elenco 
+void stampaListaProdotti(nodoListaProdotti* listaProdotti); //Stampa tutti gli elememti della lista
 nodoListaProdotti* creaNodoListaProdotti(char nomeProdotto[], char caratteristica[], float prezzo, int taglieS, int taglieM, int taglieL);
 nodoListaProdotti* inserisciInCodaListaProdotti(nodoListaProdotti* lista, char nomeProdotto[], char caratterstica[], float prezzo, int taglieS, int taglieM, int taglieL);
 nodoListaProdotti* popolaListaProdotti(nodoListaProdotti* listaProdotti);
@@ -77,5 +79,8 @@ nodoListaUtenti* inserisciInCodaListaUtenti(nodoListaUtenti* lista, char nomeUte
 void stampaListaUtenti(nodoListaUtenti* listaUtenti);
 int ricercaUtenteNellaLista(nodoListaUtenti* listaUtenti,utente* utenteOutput ,char nomeUtente[], char password[]); //Ricerca un utente nella lista di utenti
 int ricercaUtentePerNome(nodoListaUtenti* listaUtenti, char nomeUtente[]);
+//Utilizza il doppio puntatore in modo da modificare direttamente il saldo dell'utente nella lista senza doverla ritornare
+void modificaSaldoNellaLista(nodoListaUtenti** listaUtenti, char nomeUtente[], float nuovoSaldo);
+
 
 #endif

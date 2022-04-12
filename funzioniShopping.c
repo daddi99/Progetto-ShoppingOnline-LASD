@@ -3,6 +3,61 @@
 #include <string.h>
 #include "shopping.h"
 
+void latoUtente(utente* utenteLoggato, nodoListaUtenti** listaUtenti, nodoListaProdotti** listaProdotti)
+{
+    int scelta;
+    float differenzaImporto;
+
+    while (1)
+    {
+        //Effettua le varie stampe
+        printf(SEPARATORE);
+        printf(CIANO "LATO UTENTE\n" NORMALE);
+        printf("Benvenuto/a, %s%s%s\n",VERDE, utenteLoggato->nomeUtente, NORMALE);
+        printf("Saldo disponibile: %s%.2f%s\n",ROSSO, utenteLoggato->saldo, NORMALE);
+        printf("\n1) Aggiungi fondi\n");
+        printf("2) Preleva fondi\n");
+        printf("3) Acquista un prodotto\n");
+        printf("4) Logout\n");
+
+        scanf("%d",&scelta);
+
+        //Aggiungi fondi:
+        if(scelta == 1)
+        {
+            printf("\nInserire importo da aggiungere in euro (es. 49.99): ");
+            scanf("%f",&differenzaImporto);
+            utenteLoggato->saldo += differenzaImporto;  //Modifica il saldo dell'utente loggato
+            modificaSaldoNellaLista(listaUtenti,utenteLoggato->nomeUtente, utenteLoggato->saldo); //Aggiorna il saldo dell'utente anche nella lista           
+            printf(VERDE "Deposito effettuato con successo!\n" NORMALE);
+        }
+        //Preleva fondi:
+        else if(scelta == 2)
+        {
+            printf("\nInserire importo da prelevare in euro (es. 49.99): ");
+            scanf("%f",&differenzaImporto);
+
+            if(differenzaImporto <= utenteLoggato->saldo) //Se l'utente ha abbastanza soldi per fare il prelievo
+            {
+                utenteLoggato->saldo -= differenzaImporto;
+                modificaSaldoNellaLista(listaUtenti,utenteLoggato->nomeUtente, utenteLoggato->saldo);
+                printf(VERDE "Prelievo effettuato con successo!\n" NORMALE);
+            }
+            else
+                printf(ROSSO "Il saldo non e' sufficiente per effettuare il prelievo\n" NORMALE);
+        }
+        //Acquista un prodotto:
+        else if(scelta == 3)
+        {
+            printf("\nPRODOTTI DISPONIBILI\n");
+            mostraListaProdotti(*listaProdotti, 1); //Stampa l'elenco dei prodotti
+
+        }
+        else if(scelta == 4)
+            break;
+    }
+}
+
 nodoListaUtenti* effettuaRegistrazione(nodoListaUtenti* listaUtenti)
 {
     char nomeUtente[20];
@@ -103,10 +158,23 @@ int effettuaLogin(nodoListaUtenti* listaUtenti,nodoListaAmministratori* listaAmm
 //-----------------------------------------------------------------------//
 //FUNZIONI PER LA LISTA DI PRODOTTI
 
-void stampaListaProdotti(nodoListaProdotti* listaProdotti)
+void mostraListaProdotti(nodoListaProdotti* listaProdotti, int indice)
 {
     if(listaProdotti == NULL)
         printf("");
+    else
+    {
+        //Stampa la lista in un formato ad elenco, più sensato nell'interfaccia
+        printf("%d) %s %s %.2f euro\n", indice, listaProdotti->prodotto.nomeProdotto,listaProdotti->prodotto.caratterstica,listaProdotti->prodotto.prezzo);
+
+        mostraListaProdotti(listaProdotti->next,indice + 1);
+    }
+}
+
+void stampaListaProdotti(nodoListaProdotti* listaProdotti)
+{
+    if(listaProdotti == NULL)
+        printf("NULL");
     else
     {
         //Stampa semplicemente tutti i campi del nodo
@@ -230,6 +298,18 @@ nodoListaAmministratori* popolaListaAmministratori(nodoListaAmministratori* list
 }
 
 //FUNZIONI PER LA LISTA DI UTENTI
+//Funzione ricosiva che utlizza il doppio puntatore per modificare direttamente il saldo dell'utente all'interno della lista senza doverla ritornare
+void modificaSaldoNellaLista(nodoListaUtenti** listaUtenti, char nomeUtente[], float nuovoSaldo)
+{
+    if(*listaUtenti == NULL)
+        return;
+    else if(strcmp((*listaUtenti)->utente.nomeUtente,nomeUtente) == 0)  //Se trova l'utente
+    {
+        (*listaUtenti)->utente.saldo = nuovoSaldo;  //Modifica il saldo
+    }
+    else
+        modificaSaldoNellaLista((&(*listaUtenti)->next), nomeUtente, nuovoSaldo);
+}
 
 int ricercaUtentePerNome(nodoListaUtenti* listaUtenti, char nomeUtente[])
 {

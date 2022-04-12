@@ -18,17 +18,18 @@ int main()
     //Loop principale della schermata iniziale, permette di poter ritornare a questo punto saltando alla prossima iterazione.
     while (1)
     {
-        areaDiAccesso = effettuaLogin(listaUtenti, listaAmministratori, &utenteLoggato, &adminLoggato);
-        
+        //Determina in quale lato dell'applicazione entrare e ritorna per riferimento l'utente oppure l'amministratore
+        areaDiAccesso = effettuaLogin(listaUtenti, listaAmministratori, &utenteLoggato, &adminLoggato); 
+
         //REGISTRAZONE:
         if(areaDiAccesso == 0)
         {
-            listaUtenti = effettuaRegistrazione(listaUtenti);
+            listaUtenti = effettuaRegistrazione(listaUtenti);   //Inserisce il nuovo utente registrato nella listaUtenti
         }
         //LATO UTENTE:
         else if(areaDiAccesso == 1)
         {
-            printf("LATO UTENTE\n");
+            latoUtente(&utenteLoggato, &listaUtenti, &listaProdotti);
         }
         //lATO AMMINISTRAZIONE:
         else if(areaDiAccesso == 2)
