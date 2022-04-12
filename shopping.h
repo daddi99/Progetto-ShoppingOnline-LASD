@@ -55,9 +55,17 @@ typedef struct nodoListaAmministratori
 //Si occupa di gestire la schermata di login/registrazione, e ritorna per riferimento l'utente/amministratore che ha fatto l'accesso
 int effettuaLogin(nodoListaUtenti* listaUtenti, nodoListaAmministratori* listaAmministratori,utente* utenteLoggato, amministratore* adminLoggato);
 nodoListaUtenti* effettuaRegistrazione(nodoListaUtenti* listaUtenti); //Dopo aver fatto tutti i controlli aggiunge il nuovo utente alla listaUtenti
-void latoUtente(utente* utenteLoggato,nodoListaUtenti** listaUtenti, nodoListaProdotti** listaProdotti);
+//Gestisce tutto il lato utente dell'applicazione
+void latoUtente(utente* utenteLoggato,nodoListaUtenti** listaUtenti, nodoListaProdotti** listaProdotti, nodoListaProdotti** carrello);
+/*Gestisce tutti i casi possibili quando si effettua un acquisto (Non si hanno abbastanza soldi, non ci sono taglie disponibli ecc.) e si occupa
+di effettuare tutte le modifiche necessarie al saldo dell'utente, numero di taglie dei prodotti ecc. */
+void gestisciAcquisto(nodoListaProdotti** carrello, nodoListaUtenti** listaUtenti, utente* utenteLoggato, prodotto* prodottoDaAcquistare, int* numeroTaglieDisponibili);
+
+
 
 //FUNZIONI LISTA PRODOTTI
+prodotto* ottieniProdottoDaIndice(nodoListaProdotti* listaProdotti, int posizione);
+void mostraCarrello(nodoListaProdotti* carrello);
 void mostraListaProdotti(nodoListaProdotti* listaProdotti, int indice); //Stampa la lista sotto forma di elenco 
 void stampaListaProdotti(nodoListaProdotti* listaProdotti); //Stampa tutti gli elememti della lista
 nodoListaProdotti* creaNodoListaProdotti(char nomeProdotto[], char caratteristica[], float prezzo, int taglieS, int taglieM, int taglieL);

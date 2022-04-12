@@ -3,10 +3,13 @@
 #include <string.h>
 #include "shopping.h"
 
-void latoUtente(utente* utenteLoggato, nodoListaUtenti** listaUtenti, nodoListaProdotti** listaProdotti)
+void latoUtente(utente* utenteLoggato, nodoListaUtenti** listaUtenti, nodoListaProdotti** listaProdotti, nodoListaProdotti** carrello)
 {
     int scelta;
+    int sceltaProdotto;
+    int sceltaAcquisto;
     float differenzaImporto;
+    prodotto* prodottoDaAcquistare;
 
     while (1)
     {
@@ -14,11 +17,12 @@ void latoUtente(utente* utenteLoggato, nodoListaUtenti** listaUtenti, nodoListaP
         printf(SEPARATORE);
         printf(CIANO "LATO UTENTE\n" NORMALE);
         printf("Benvenuto/a, %s%s%s\n",VERDE, utenteLoggato->nomeUtente, NORMALE);
-        printf("Saldo disponibile: %s%.2f%s\n",ROSSO, utenteLoggato->saldo, NORMALE);
+        printf("Saldo disponibile: %s%.2f euro%s\n",ROSSO, utenteLoggato->saldo, NORMALE);
         printf("\n1) Aggiungi fondi\n");
         printf("2) Preleva fondi\n");
         printf("3) Acquista un prodotto\n");
-        printf("4) Logout\n");
+        printf("4) Visualizza Carrello\n");
+        printf("5) Logout\n");
 
         scanf("%d",&scelta);
 
@@ -49,12 +53,73 @@ void latoUtente(utente* utenteLoggato, nodoListaUtenti** listaUtenti, nodoListaP
         //Acquista un prodotto:
         else if(scelta == 3)
         {
-            printf("\nPRODOTTI DISPONIBILI\n");
+            printf(CIANO "\nPRODOTTI DISPONIBILI\n" NORMALE);
             mostraListaProdotti(*listaProdotti, 1); //Stampa l'elenco dei prodotti
 
+            printf("\nSelezionare il prodotto per visualizzare i dettagli: ");
+            scanf("%d",&sceltaProdotto);
+
+            prodottoDaAcquistare = ottieniProdottoDaIndice(*listaProdotti,sceltaProdotto - 1); //Ottiene l'elemento della lista scelto
+
+            //Stampa tutte le informazioni del prodotto selezionato
+            printf(CIANO "\nINFORMAZIONI PRODOTTO\n" NORMALE);
+            printf("Nome: %s %s\n",prodottoDaAcquistare->nomeProdotto,prodottoDaAcquistare->caratterstica);
+            printf("Prezzo: %.2f euro\n",prodottoDaAcquistare->prezzo);
+            printf("Taglie S disponibili: %d\n",prodottoDaAcquistare->TaglieSdisponibili);
+            printf("Taglie M disponibili: %d\n",prodottoDaAcquistare->TaglieMdisponibili);
+            printf("Taglie L disponibili: %d\n",prodottoDaAcquistare->TaglieLdisponibili);
+
+            printf("\n1)Acquista taglia S\n");
+            printf("2)Acquista taglia M\n");
+            printf("3)Acquista taglia L\n");
+            printf("4)Annulla Acquisto\n");
+            scanf("%d",&sceltaAcquisto);
+
+            //Acquista taglia S:
+            if(sceltaAcquisto == 1)
+                gestisciAcquisto(carrello, listaUtenti, utenteLoggato,prodottoDaAcquistare,&(prodottoDaAcquistare->TaglieSdisponibili));
+            //Acquista taglia M:
+            else if(sceltaAcquisto  == 2)
+                gestisciAcquisto(carrello, listaUtenti, utenteLoggato,prodottoDaAcquistare,&(prodottoDaAcquistare->TaglieMdisponibili));
+            //Acquista taglia L:
+            else if(sceltaAcquisto == 3)
+                gestisciAcquisto(carrello, listaUtenti, utenteLoggato,prodottoDaAcquistare,&(prodottoDaAcquistare->TaglieLdisponibili)); 
         }
+        //Visualizza carrello:
         else if(scelta == 4)
+        {
+            printf(CIANO "\nCONTENUTO CARRELLO\n" NORMALE);
+            mostraCarrello(*carrello);
+        }
+        else if(scelta == 5)
             break;
+    }
+}
+
+void gestisciAcquisto(nodoListaProdotti** carrello, nodoListaUtenti** listaUtenti, utente* utenteLoggato, prodotto* prodottoDaAcquistare, int* numeroTaglieDisponibili)
+{
+    if(utenteLoggato->saldo >= prodottoDaAcquistare->prezzo && *numeroTaglieDisponibili > 0) //Se l'utente ha abbastanza soldi e c'è almeno una taglia S disponibile
+    {
+        utenteLoggato->saldo -= prodottoDaAcquistare->prezzo; //Decrementa il saldo dell'utente
+        (*numeroTaglieDisponibili)--; //Decrementa il numero di taglie S del prodotto
+        modificaSaldoNellaLista(listaUtenti,utenteLoggato->nomeUtente, utenteLoggato->saldo); //Aggiorna il saldo anche nella lista
+
+        printf(VERDE "Acquisto effettuato con successo!\n" NORMALE);
+    }
+    else if(utenteLoggato->saldo < prodottoDaAcquistare->prezzo) //Se l'utente non ha abbastanza soldi
+    {
+        printf(ROSSO "Non hai abbastanza fondi per completare l'acquisto, effettua una ricarica\n" NORMALE);
+        //Inserisce il prodotto nella lista carrello
+        *carrello = inserisciInCodaListaProdotti(*carrello,prodottoDaAcquistare->nomeProdotto,prodottoDaAcquistare->caratterstica,prodottoDaAcquistare->prezzo,
+        prodottoDaAcquistare->TaglieSdisponibili,prodottoDaAcquistare->TaglieMdisponibili,prodottoDaAcquistare->TaglieLdisponibili);
+
+        printf(VERDE "Il prodotto desiderato e' stato aggiunto al carrello\n" NORMALE);
+    }
+    else if(*numeroTaglieDisponibili == 0)  //Se non ci sono abbastanza taglie disponibili
+    {
+        printf(ROSSO "Impossibile completare l'acquisto perche' la taglia scelta non e' disponibile\n" NORMALE);
+        // TODO: Aggiungi utente nella lista di attesa
+        printf(VERDE "Sei stato aggiunto ad una lista d'attesa\n" NORMALE);
     }
 }
 
@@ -157,6 +222,25 @@ int effettuaLogin(nodoListaUtenti* listaUtenti,nodoListaAmministratori* listaAmm
 
 //-----------------------------------------------------------------------//
 //FUNZIONI PER LA LISTA DI PRODOTTI
+
+void mostraCarrello(nodoListaProdotti* carrello)
+{
+    if(carrello == NULL)
+        printf("");
+    else
+    {
+        printf("- %s %s %.2f euro\n",carrello->prodotto.nomeProdotto, carrello->prodotto.caratterstica,carrello->prodotto.prezzo);
+
+        mostraCarrello(carrello->next);
+    }
+}
+
+prodotto* ottieniProdottoDaIndice(nodoListaProdotti* listaProdotti, int posizione)
+{
+    for(int i=0; i<posizione; i++)
+        listaProdotti = listaProdotti->next;
+    return &(listaProdotti->prodotto);
+}
 
 void mostraListaProdotti(nodoListaProdotti* listaProdotti, int indice)
 {

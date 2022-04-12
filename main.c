@@ -6,6 +6,7 @@ int main()
     nodoListaUtenti* listaUtenti = NULL; //Lista contentente tutti gli utenti registrati
     nodoListaAmministratori* listaAmministratori = NULL; //Lista contenente tutti gli amministratori
     nodoListaProdotti* listaProdotti = NULL; //Lista contenente tutti i prodotti disponibili
+    nodoListaProdotti* carrello = NULL;
     utente utenteLoggato;   //Il contenuto verrà modificato per riferimento nella funzione effettuaLogin(). Conterrà i dati dell'utente che ha fatto l'accesso.
     amministratore adminLoggato; 
     int areaDiAccesso; //1 = Lato Utente, 2 = Lato Amministrazione
@@ -29,7 +30,7 @@ int main()
         //LATO UTENTE:
         else if(areaDiAccesso == 1)
         {
-            latoUtente(&utenteLoggato, &listaUtenti, &listaProdotti);
+            latoUtente(&utenteLoggato, &listaUtenti, &listaProdotti, &carrello);
         }
         //lATO AMMINISTRAZIONE:
         else if(areaDiAccesso == 2)
