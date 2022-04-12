@@ -128,6 +128,7 @@ nodoListaUtenti* effettuaRegistrazione(nodoListaUtenti* listaUtenti)
     char nomeUtente[20];
     char password[20];
     char confermaPassword[20];
+    FILE* fileUtenti = fopen("utenti.txt","a");
 
     while(1)
     {
@@ -147,6 +148,9 @@ nodoListaUtenti* effettuaRegistrazione(nodoListaUtenti* listaUtenti)
             {
                 listaUtenti = inserisciInCodaListaUtenti(listaUtenti, nomeUtente, password,0); //Inserisce il nuovo utente nella lista
                 printf(VERDE "Registrazione effettuata correttamente\n" NORMALE);
+
+                fprintf(fileUtenti,"\n%s %s %.2f",nomeUtente, password, 0); //Scrive il nuovo utente nel file utenti.txt
+                fclose(fileUtenti);
                 return listaUtenti;
             }
             else
@@ -164,6 +168,7 @@ int effettuaLogin(nodoListaUtenti* listaUtenti,nodoListaAmministratori* listaAmm
     char nomeUtente[20];
     char password[20];
 
+    printf(SEPARATORE);
     printf(MAGENTA "BENVENUTO NELLO SHOPPING ONLINE\n" NORMALE);
     printf("1) Accedi come utente\n");
     printf("2) Accedi come amministratore\n");

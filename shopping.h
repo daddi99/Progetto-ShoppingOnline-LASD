@@ -51,6 +51,7 @@ typedef struct nodoListaAmministratori
     struct nodoListaAmministratori* next;
 }nodoListaAmministratori;
 
+
 //FUNZIONI PER L'INTERFACCIA
 //Si occupa di gestire la schermata di login/registrazione, e ritorna per riferimento l'utente/amministratore che ha fatto l'accesso
 int effettuaLogin(nodoListaUtenti* listaUtenti, nodoListaAmministratori* listaAmministratori,utente* utenteLoggato, amministratore* adminLoggato);
@@ -62,7 +63,6 @@ di effettuare tutte le modifiche necessarie al saldo dell'utente, numero di tagl
 void gestisciAcquisto(nodoListaProdotti** carrello, nodoListaUtenti** listaUtenti, utente* utenteLoggato, prodotto* prodottoDaAcquistare, int* numeroTaglieDisponibili);
 
 
-
 //FUNZIONI LISTA PRODOTTI
 prodotto* ottieniProdottoDaIndice(nodoListaProdotti* listaProdotti, int posizione);
 void mostraCarrello(nodoListaProdotti* carrello);
@@ -71,6 +71,7 @@ void stampaListaProdotti(nodoListaProdotti* listaProdotti); //Stampa tutti gli e
 nodoListaProdotti* creaNodoListaProdotti(char nomeProdotto[], char caratteristica[], float prezzo, int taglieS, int taglieM, int taglieL);
 nodoListaProdotti* inserisciInCodaListaProdotti(nodoListaProdotti* lista, char nomeProdotto[], char caratterstica[], float prezzo, int taglieS, int taglieM, int taglieL);
 nodoListaProdotti* popolaListaProdotti(nodoListaProdotti* listaProdotti);
+
 
 //FUNZIONI LISTA AMMINISTRATORI
 nodoListaAmministratori* popolaListaAmministratori(nodoListaAmministratori* listaAmministratori);
