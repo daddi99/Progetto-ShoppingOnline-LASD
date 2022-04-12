@@ -23,7 +23,7 @@ int main()
         //REGISTRAZONE:
         if(areaDiAccesso == 0)
         {
-            printf("REGISTRAZIONE\n");
+            listaUtenti = effettuaRegistrazione(listaUtenti);
         }
         //LATO UTENTE:
         else if(areaDiAccesso == 1)

@@ -54,6 +54,7 @@ typedef struct nodoListaAmministratori
 //FUNZIONI PER L'INTERFACCIA
 //Si occupa di gestire la schermata di login/registrazione, e ritorna per riferimento l'utente/amministratore che ha fatto l'accesso
 int effettuaLogin(nodoListaUtenti* listaUtenti, nodoListaAmministratori* listaAmministratori,utente* utenteLoggato, amministratore* adminLoggato);
+nodoListaUtenti* effettuaRegistrazione(nodoListaUtenti* listaUtenti);
 
 //FUNZIONI LISTA PRODOTTI
 void stampaListaProdotti(nodoListaProdotti* listaProdotti);
@@ -75,5 +76,6 @@ nodoListaUtenti* creaNodoListaUtenti(char nomeUtente[], char password[], float s
 nodoListaUtenti* inserisciInCodaListaUtenti(nodoListaUtenti* lista, char nomeUtente[], char password[], float saldo);
 void stampaListaUtenti(nodoListaUtenti* listaUtenti);
 int ricercaUtenteNellaLista(nodoListaUtenti* listaUtenti,utente* utenteOutput ,char nomeUtente[], char password[]); //Ricerca un utente nella lista di utenti
+int ricercaUtentePerNome(nodoListaUtenti* listaUtenti, char nomeUtente[]);
 
 #endif

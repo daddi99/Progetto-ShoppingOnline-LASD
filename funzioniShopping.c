@@ -3,6 +3,40 @@
 #include <string.h>
 #include "shopping.h"
 
+nodoListaUtenti* effettuaRegistrazione(nodoListaUtenti* listaUtenti)
+{
+    char nomeUtente[20];
+    char password[20];
+    char confermaPassword[20];
+
+    while(1)
+    {
+        //Effettua tutte le varie stampe
+        printf(SEPARATORE); 
+        printf(CIANO "REGISTRAZIONE UTENTE\n" NORMALE);
+        printf("Inserisci nome utente: ");
+        scanf("%s",nomeUtente);
+        printf("Inserisci password: ");
+        scanf("%s",password);
+        printf("Conferma password: ");
+        scanf("%s",confermaPassword);
+
+        if(strcmp(password,confermaPassword) == 0) //Se le password inserite coincidono
+        {
+            if(ricercaUtentePerNome(listaUtenti, nomeUtente) == 0) //Se l'utente non è già registrato
+            {
+                listaUtenti = inserisciInCodaListaUtenti(listaUtenti, nomeUtente, password,0); //Inserisce il nuovo utente nella lista
+                printf(VERDE "Registrazione effettuata correttamente\n" NORMALE);
+                return listaUtenti;
+            }
+            else
+                printf(ROSSO "L'utente inserito e gia registrato\n" NORMALE);
+        }
+        else
+            printf(ROSSO "Le password inserite non coincidono\n" NORMALE);
+    }
+}
+
 
 int effettuaLogin(nodoListaUtenti* listaUtenti,nodoListaAmministratori* listaAmministratori, utente* utenteLoggato, amministratore* adminLoggato)
 {
@@ -22,6 +56,7 @@ int effettuaLogin(nodoListaUtenti* listaUtenti,nodoListaAmministratori* listaAmm
         while(1) //Continua a chiedere le credenziali fin quando non inserisce quelle giuste.
         {
             printf(SEPARATORE);
+            printf(CIANO "LOGIN UTENTE\n" NORMALE);
             printf("Nome utente: ");
             scanf("%s",nomeUtente);
             printf("Password: ");
@@ -43,6 +78,7 @@ int effettuaLogin(nodoListaUtenti* listaUtenti,nodoListaAmministratori* listaAmm
         while(1)
         {
             printf(SEPARATORE);
+            printf(CIANO "LOGIN AMMINISTRAZIONE\n" NORMALE);
             printf("Nome amministratore: ");
             scanf("%s",nomeUtente);
             printf("Password: ");
@@ -64,10 +100,7 @@ int effettuaLogin(nodoListaUtenti* listaUtenti,nodoListaAmministratori* listaAmm
     }
 }
 
-
-
-
-
+//-----------------------------------------------------------------------//
 //FUNZIONI PER LA LISTA DI PRODOTTI
 
 void stampaListaProdotti(nodoListaProdotti* listaProdotti)
@@ -197,6 +230,18 @@ nodoListaAmministratori* popolaListaAmministratori(nodoListaAmministratori* list
 }
 
 //FUNZIONI PER LA LISTA DI UTENTI
+
+int ricercaUtentePerNome(nodoListaUtenti* listaUtenti, char nomeUtente[])
+{
+    if(listaUtenti == NULL)
+        return 0;
+    //Se trova il nome utente nella lista 
+    else if(strcmp(listaUtenti->utente.nomeUtente,nomeUtente) == 0)
+        return 1;
+    else
+        //Procede ricorsivamente sul resto della lista
+        return ricercaUtentePerNome(listaUtenti->next, nomeUtente);
+}
 
 //Funzione ricorsiva che ricerca un utente nella lista di utenti
 int ricercaUtenteNellaLista(nodoListaUtenti* listaUtenti, utente* utenteOutput,char nomeUtente[], char password[])
