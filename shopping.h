@@ -73,6 +73,7 @@ void gestisciAcquisto(nodoCarrello** carrello, char tagliaRichiesta, nodoListaUt
 
 
 //FUNZIONI LISTA PRODOTTI
+prodotto* ottieniProdottoPerNome(nodoListaProdotti* listaProdotti, char nomeProdotto[], char caratteristica[]);
 prodotto* ottieniProdottoDaIndice(nodoListaProdotti* listaProdotti, int posizione);
 void mostraListaProdotti(nodoListaProdotti* listaProdotti, int indice); //Stampa la lista sotto forma di elenco 
 void stampaListaProdotti(nodoListaProdotti* listaProdotti); //Stampa tutti gli elememti della lista
@@ -81,7 +82,9 @@ nodoListaProdotti* inserisciInCodaListaProdotti(nodoListaProdotti* lista, char n
 nodoListaProdotti* popolaListaProdotti(nodoListaProdotti* listaProdotti);
 
 //FUNZIONI LISTA CARRELLO
-void mostraProdottiCarrello(nodoCarrello* carrello, float prezzoIniziale);
+//Si occupa di far acquistare TUTTO il contenuto del carrello, modificando opportunamente tutti i campi. Successivamente dealloca la lista Carrello
+void acquistaCarrello(utente* utenteLoggato, nodoListaUtenti** listaUtenti, nodoCarrello** carrello, nodoListaProdotti** listaProdotti);
+float mostraProdottiCarrello(nodoCarrello* carrello, float prezzoIniziale); //Stampa il carrello e ritorna il prezzo totale
 nodoCarrello* creaNodoListaCarrello(char nomeProdotto[], char caratteristica[], char tagliaRichiesta, float prezzo);
 nodoCarrello* inserisciInCodaListaCarrello(nodoCarrello* lista, char nomeProdotto[], char caratterstica[], char tagliaRichiesta, float prezzo); 
 

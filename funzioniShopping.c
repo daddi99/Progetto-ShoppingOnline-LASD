@@ -11,6 +11,7 @@ void latoUtente(utente* utenteLoggato, nodoListaUtenti** listaUtenti, nodoListaP
     int sceltaAcquisto;
     int sceltaCarrello;
 
+    float prezzoTotaleCarrello = 0;
     float differenzaImporto;
     prodotto* prodottoDaAcquistare;
 
@@ -92,11 +93,23 @@ void latoUtente(utente* utenteLoggato, nodoListaUtenti** listaUtenti, nodoListaP
         else if(scelta == 4)
         {
             printf(CIANO "\nCONTENUTO CARRELLO\n" NORMALE);
-            mostraProdottiCarrello(*carrello,0);
+            prezzoTotaleCarrello = mostraProdottiCarrello(*carrello,0); //Si salva il prezzo totale e stampa il carrello
 
             printf("1) Procedi all'ordine\n");
             printf("2) Indietro\n");
             scanf("%d",&sceltaCarrello);
+
+            //Procedi all'ordine:
+            if(sceltaCarrello == 1)
+            {
+                if(utenteLoggato->saldo >= prezzoTotaleCarrello) //Se l'utente ha abbastanza soldi per acquistare TUTTO il carrello
+                {
+                    acquistaCarrello(utenteLoggato,listaUtenti,carrello,listaProdotti);
+                    printf(VERDE "Ordine completato con successo!\n" NORMALE); 
+                }
+                else //Se non ha abbastanza soldi
+                    printf(ROSSO "Il tuo saldo non e' sufficiente per completare l'ordine, effettua una ricarica.\n" NORMALE);
+            }
         }
         //Logout:
         else if(scelta == 5)
@@ -116,17 +129,17 @@ void gestisciAcquisto(nodoCarrello** carrello, char tagliaRichiesta, nodoListaUt
     }
     else if(utenteLoggato->saldo < prodottoDaAcquistare->prezzo) //Se l'utente non ha abbastanza soldi
     {
-        printf(ROSSO "Non hai abbastanza fondi per completare l'acquisto, effettua una ricarica\n" NORMALE);
+        printf(ROSSO "Non hai abbastanza fondi per completare l'acquisto, effettua una ricarica.\n" NORMALE);
         //Inserisce il prodotto nella lista carrello
         *carrello = inserisciInCodaListaCarrello(*carrello,prodottoDaAcquistare->nomeProdotto,prodottoDaAcquistare->caratterstica,tagliaRichiesta, prodottoDaAcquistare->prezzo);
 
-        printf(VERDE "Il prodotto desiderato e' stato aggiunto al carrello\n" NORMALE);
+        printf(VERDE "Il prodotto desiderato e' stato spostato nel carrello.\n" NORMALE);
     }
     else if(*numeroTaglieDisponibili == 0)  //Se non ci sono abbastanza taglie disponibili
     {
-        printf(ROSSO "Impossibile completare l'acquisto perche' la taglia scelta non e' disponibile\n" NORMALE);
+        printf(ROSSO "Impossibile completare l'acquisto perche' la taglia scelta non e' disponibile.\n" NORMALE);
         // TODO: Aggiungi utente nella lista di attesa
-        printf(VERDE "Sei stato aggiunto ad una lista d'attesa\n" NORMALE);
+        printf(VERDE "Sei stato aggiunto ad una lista d'attesa per tenere traccia della disponibilita'\n" NORMALE);
     }
 }
 
@@ -235,6 +248,18 @@ int effettuaLogin(nodoListaUtenti* listaUtenti,nodoListaAmministratori* listaAmm
 //-----------------------------------------------------------------------//
 //FUNZIONI PER LA LISTA DI PRODOTTI
 
+prodotto* ottieniProdottoPerNome(nodoListaProdotti* listaProdotti, char nomeProdotto[], char caratteristica[])
+{
+    if(listaProdotti == NULL)
+        return NULL;
+    //Se trova il prodotto nella lista lo ritorna 
+    else if(strcmp(listaProdotti->prodotto.nomeProdotto,nomeProdotto) == 0 && strcmp(listaProdotti->prodotto.caratterstica,caratteristica) == 0)
+        return &(listaProdotti->prodotto);
+    else
+        //Procede ricorsivamente sul resto della lista
+        return ottieniProdottoPerNome(listaProdotti->next, nomeProdotto, caratteristica);
+}
+
 prodotto* ottieniProdottoDaIndice(nodoListaProdotti* listaProdotti, int posizione)
 {
     for(int i=0; i<posizione; i++)
@@ -315,20 +340,57 @@ nodoListaProdotti* popolaListaProdotti(nodoListaProdotti* listaProdotti)
 
 //FUNZIONI LISTA CARRELLO
 
-
-
-void mostraProdottiCarrello(nodoCarrello* carrello, float prezzoIniziale)
+/*Scorre tutta la lista carrello: Ad ogni iterazione si ricava il corrispondente prodotto nella ListaProdotti, successivamente va a 
+verificare la taglia richiesta ed effettua l'acquisto, modificando opportunamente tutte i campi dei nodi. Infine dealloca la lista Carrello */
+void acquistaCarrello(utente* utenteLoggato, nodoListaUtenti** listaUtenti, nodoCarrello** carrello, nodoListaProdotti** listaProdotti)
 {
-    float prezzoTotale = prezzoIniziale;    
+    prodotto* prodottoCorrente;
 
+    while(*carrello != NULL)    //Scorre tutto il carrello
+    {
+        //Va a cercarsi il prodotto del carrello nella lista di prodotti
+        prodottoCorrente = ottieniProdottoPerNome(*listaProdotti, (*carrello)->nomeProdotto, (*carrello)->caratteristica);
+
+        //Se il prodotto nel carrello è di taglia S
+        if((*carrello)->tagliaRichiesta == 'S')
+        {
+            utenteLoggato->saldo -= prodottoCorrente->prezzo; //Decrementa il saldo dell'utente
+            modificaSaldoNellaLista(listaUtenti,utenteLoggato->nomeUtente, utenteLoggato->saldo);
+            prodottoCorrente->TaglieSdisponibili--; //Decrementa il numero di taglie S del prodotto
+        }
+        else if ((*carrello)->tagliaRichiesta == 'M')
+        {
+            utenteLoggato->saldo -= prodottoCorrente->prezzo;
+            modificaSaldoNellaLista(listaUtenti,utenteLoggato->nomeUtente, utenteLoggato->saldo);
+            prodottoCorrente->TaglieMdisponibili--; //Decrementa taglie M
+        }
+        else if ((*carrello)->tagliaRichiesta == 'L')
+        {
+            utenteLoggato->saldo -= prodottoCorrente->prezzo;
+            modificaSaldoNellaLista(listaUtenti,utenteLoggato->nomeUtente, utenteLoggato->saldo);
+            prodottoCorrente->TaglieLdisponibili--; //Decrementa taglie L
+        }
+        
+        nodoCarrello* tmp = *carrello; //Salva la posizione del nodo in una variabile temporanea
+        *carrello = (*carrello)->next; //Scorre avanti la lista
+        free(tmp); //Svuota la zona di memoria del prodotto ;
+    }
+}
+
+//Stampa in modo corretto tutto il contenuto del carrello e ritorna il prezzo totale
+float mostraProdottiCarrello(nodoCarrello* carrello, float prezzoIniziale)
+{
     if(carrello == NULL) //Quando non trova piu prodotti nel carrello stampa il prezzo totale
-        printf("\nPrezzo totale: %s%.2f euro%s\n",ROSSO, prezzoTotale, NORMALE);
+    {
+        printf("\nPrezzo totale: %s%.2f euro%s\n",ROSSO, prezzoIniziale, NORMALE);
+        return prezzoIniziale;
+    }
     else
     {
         //Stampa semplicemente tutti i campi del nodo
         printf("- %s %s Taglia %c %.2f euro\n", carrello->nomeProdotto, carrello->caratteristica, carrello->tagliaRichiesta, carrello->prezzo);
 
-        mostraProdottiCarrello(carrello->next, prezzoTotale + carrello->prezzo); 
+        return mostraProdottiCarrello(carrello->next, prezzoIniziale + carrello->prezzo); 
     }    
 }
 

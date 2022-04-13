@@ -6,10 +6,10 @@ int main()
     nodoListaUtenti* listaUtenti = NULL; //Lista contentente tutti gli utenti registrati
     nodoListaAmministratori* listaAmministratori = NULL; //Lista contenente tutti gli amministratori
     nodoListaProdotti* listaProdotti = NULL; //Lista contenente tutti i prodotti disponibili
-    nodoCarrello* carrello = NULL;
+    nodoCarrello* carrello = NULL;  //Lista contenente tutti i prodotti nel carrello
     utente utenteLoggato;   //Il contenuto verrà modificato per riferimento nella funzione effettuaLogin(). Conterrà i dati dell'utente che ha fatto l'accesso.
     amministratore adminLoggato; 
-    int areaDiAccesso; //1 = Lato Utente, 2 = Lato Amministrazione
+    int areaDiAccesso; //0 = Registrazione, 1 = Lato Utente, 2 = Lato Amministrazione
 
     //Popola tutte le liste con il contenuto dei rispettivi file
     listaUtenti = popolaListaUtenti(listaUtenti);
@@ -25,12 +25,16 @@ int main()
         //REGISTRAZONE:
         if(areaDiAccesso == 0)
         {
-            listaUtenti = effettuaRegistrazione(listaUtenti);   //Inserisce il nuovo utente registrato nella listaUtenti
+            //Inserisce il nuovo utente registrato nella listaUtenti
+            listaUtenti = effettuaRegistrazione(listaUtenti);   
         }
         //LATO UTENTE:
         else if(areaDiAccesso == 1)
         {
-            latoUtente(&utenteLoggato, &listaUtenti, &listaProdotti, &carrello);
+            /* Avvia la funzione principale del Lato Utente che a sua volta chiamerà molte altre funzioni. Utilizza i doppi puntatori in modo
+            da modificare direttamente il contenuto delle liste nel main e per evitare di dover fare una funzione diversa per ogni valore di 
+            ritorno.*/
+            latoUtente(&utenteLoggato, &listaUtenti, &listaProdotti, &carrello); 
         }
         //lATO AMMINISTRAZIONE:
         else if(areaDiAccesso == 2)
