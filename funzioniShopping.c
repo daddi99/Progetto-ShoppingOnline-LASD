@@ -3,11 +3,14 @@
 #include <string.h>
 #include "shopping.h"
 
-void latoUtente(utente* utenteLoggato, nodoListaUtenti** listaUtenti, nodoListaProdotti** listaProdotti, nodoListaProdotti** carrello)
+void latoUtente(utente* utenteLoggato, nodoListaUtenti** listaUtenti, nodoListaProdotti** listaProdotti, nodoCarrello** carrello)
 {
+    //Variabili utilizzate per le scelte nei vari menù
     int scelta;
     int sceltaProdotto;
     int sceltaAcquisto;
+    int sceltaCarrello;
+
     float differenzaImporto;
     prodotto* prodottoDaAcquistare;
 
@@ -77,28 +80,33 @@ void latoUtente(utente* utenteLoggato, nodoListaUtenti** listaUtenti, nodoListaP
 
             //Acquista taglia S:
             if(sceltaAcquisto == 1)
-                gestisciAcquisto(carrello, listaUtenti, utenteLoggato,prodottoDaAcquistare,&(prodottoDaAcquistare->TaglieSdisponibili));
+                gestisciAcquisto(carrello, 'S',listaUtenti,utenteLoggato,prodottoDaAcquistare,&(prodottoDaAcquistare->TaglieSdisponibili));
             //Acquista taglia M:
             else if(sceltaAcquisto  == 2)
-                gestisciAcquisto(carrello, listaUtenti, utenteLoggato,prodottoDaAcquistare,&(prodottoDaAcquistare->TaglieMdisponibili));
+                gestisciAcquisto(carrello, 'M',listaUtenti,utenteLoggato,prodottoDaAcquistare,&(prodottoDaAcquistare->TaglieMdisponibili));
             //Acquista taglia L:
             else if(sceltaAcquisto == 3)
-                gestisciAcquisto(carrello, listaUtenti, utenteLoggato,prodottoDaAcquistare,&(prodottoDaAcquistare->TaglieLdisponibili)); 
+                gestisciAcquisto(carrello, 'L',listaUtenti, utenteLoggato,prodottoDaAcquistare,&(prodottoDaAcquistare->TaglieLdisponibili)); 
         }
         //Visualizza carrello:
         else if(scelta == 4)
         {
             printf(CIANO "\nCONTENUTO CARRELLO\n" NORMALE);
-            mostraCarrello(*carrello);
+            mostraProdottiCarrello(*carrello,0);
+
+            printf("1) Procedi all'ordine\n");
+            printf("2) Indietro\n");
+            scanf("%d",&sceltaCarrello);
         }
+        //Logout:
         else if(scelta == 5)
             break;
     }
 }
 
-void gestisciAcquisto(nodoListaProdotti** carrello, nodoListaUtenti** listaUtenti, utente* utenteLoggato, prodotto* prodottoDaAcquistare, int* numeroTaglieDisponibili)
+void gestisciAcquisto(nodoCarrello** carrello, char tagliaRichiesta, nodoListaUtenti** listaUtenti, utente* utenteLoggato, prodotto* prodottoDaAcquistare, int* numeroTaglieDisponibili)
 {
-    if(utenteLoggato->saldo >= prodottoDaAcquistare->prezzo && *numeroTaglieDisponibili > 0) //Se l'utente ha abbastanza soldi e c'è almeno una taglia S disponibile
+    if(utenteLoggato->saldo >= prodottoDaAcquistare->prezzo && *numeroTaglieDisponibili > 0) //Se l'utente ha abbastanza soldi e c'è almeno una taglia disponibile
     {
         utenteLoggato->saldo -= prodottoDaAcquistare->prezzo; //Decrementa il saldo dell'utente
         (*numeroTaglieDisponibili)--; //Decrementa il numero di taglie S del prodotto
@@ -110,8 +118,7 @@ void gestisciAcquisto(nodoListaProdotti** carrello, nodoListaUtenti** listaUtent
     {
         printf(ROSSO "Non hai abbastanza fondi per completare l'acquisto, effettua una ricarica\n" NORMALE);
         //Inserisce il prodotto nella lista carrello
-        *carrello = inserisciInCodaListaProdotti(*carrello,prodottoDaAcquistare->nomeProdotto,prodottoDaAcquistare->caratterstica,prodottoDaAcquistare->prezzo,
-        prodottoDaAcquistare->TaglieSdisponibili,prodottoDaAcquistare->TaglieMdisponibili,prodottoDaAcquistare->TaglieLdisponibili);
+        *carrello = inserisciInCodaListaCarrello(*carrello,prodottoDaAcquistare->nomeProdotto,prodottoDaAcquistare->caratterstica,tagliaRichiesta, prodottoDaAcquistare->prezzo);
 
         printf(VERDE "Il prodotto desiderato e' stato aggiunto al carrello\n" NORMALE);
     }
@@ -228,18 +235,6 @@ int effettuaLogin(nodoListaUtenti* listaUtenti,nodoListaAmministratori* listaAmm
 //-----------------------------------------------------------------------//
 //FUNZIONI PER LA LISTA DI PRODOTTI
 
-void mostraCarrello(nodoListaProdotti* carrello)
-{
-    if(carrello == NULL)
-        printf("");
-    else
-    {
-        printf("- %s %s %.2f euro\n",carrello->prodotto.nomeProdotto, carrello->prodotto.caratterstica,carrello->prodotto.prezzo);
-
-        mostraCarrello(carrello->next);
-    }
-}
-
 prodotto* ottieniProdottoDaIndice(nodoListaProdotti* listaProdotti, int posizione)
 {
     for(int i=0; i<posizione; i++)
@@ -316,6 +311,48 @@ nodoListaProdotti* popolaListaProdotti(nodoListaProdotti* listaProdotti)
     fclose(fileProdotti);
 
     return listaProdotti;
+}
+
+//FUNZIONI LISTA CARRELLO
+
+
+
+void mostraProdottiCarrello(nodoCarrello* carrello, float prezzoIniziale)
+{
+    float prezzoTotale = prezzoIniziale;    
+
+    if(carrello == NULL) //Quando non trova piu prodotti nel carrello stampa il prezzo totale
+        printf("\nPrezzo totale: %s%.2f euro%s\n",ROSSO, prezzoTotale, NORMALE);
+    else
+    {
+        //Stampa semplicemente tutti i campi del nodo
+        printf("- %s %s Taglia %c %.2f euro\n", carrello->nomeProdotto, carrello->caratteristica, carrello->tagliaRichiesta, carrello->prezzo);
+
+        mostraProdottiCarrello(carrello->next, prezzoTotale + carrello->prezzo); 
+    }    
+}
+
+nodoCarrello* creaNodoListaCarrello(char nomeProdotto[], char caratteristica[], char tagliaRichiesta, float prezzo) 
+{
+    nodoCarrello* tmp = (nodoCarrello*)malloc(sizeof(nodoCarrello)); //Alloca memoria per il nuovo nodo
+    strcpy(tmp->nomeProdotto,nomeProdotto); //Riempie tutti i campi del nuovo nodo con le informazioni in input
+    strcpy(tmp->caratteristica,caratteristica);
+    tmp->tagliaRichiesta = tagliaRichiesta;
+    tmp->prezzo = prezzo;
+    tmp->next = NULL;
+
+    return tmp;
+}
+
+nodoCarrello* inserisciInCodaListaCarrello(nodoCarrello* lista, char nomeProdotto[], char caratterstica[], char tagliaRichiesta, float prezzo)
+{
+    if(lista == NULL)
+        return creaNodoListaCarrello(nomeProdotto, caratterstica, tagliaRichiesta, prezzo);    
+    else
+    {
+        lista->next = inserisciInCodaListaCarrello(lista->next, nomeProdotto, caratterstica, tagliaRichiesta, prezzo);
+        return lista;
+    }
 }
 
 //FUNZIONI PER LA LISTA DI AMMINISTRATORI

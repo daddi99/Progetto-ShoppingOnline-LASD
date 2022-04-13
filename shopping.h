@@ -51,27 +51,39 @@ typedef struct nodoListaAmministratori
     struct nodoListaAmministratori* next;
 }nodoListaAmministratori;
 
+typedef struct nodoCarrello
+{
+    char nomeProdotto[20];
+    char caratteristica[20];
+    char tagliaRichiesta;
+    float prezzo;
+    struct nodoCarrello* next;
+}nodoCarrello;
+
 
 //FUNZIONI PER L'INTERFACCIA
 //Si occupa di gestire la schermata di login/registrazione, e ritorna per riferimento l'utente/amministratore che ha fatto l'accesso
 int effettuaLogin(nodoListaUtenti* listaUtenti, nodoListaAmministratori* listaAmministratori,utente* utenteLoggato, amministratore* adminLoggato);
 nodoListaUtenti* effettuaRegistrazione(nodoListaUtenti* listaUtenti); //Dopo aver fatto tutti i controlli aggiunge il nuovo utente alla listaUtenti
 //Gestisce tutto il lato utente dell'applicazione
-void latoUtente(utente* utenteLoggato,nodoListaUtenti** listaUtenti, nodoListaProdotti** listaProdotti, nodoListaProdotti** carrello);
+void latoUtente(utente* utenteLoggato,nodoListaUtenti** listaUtenti, nodoListaProdotti** listaProdotti, nodoCarrello** carrello);
 /*Gestisce tutti i casi possibili quando si effettua un acquisto (Non si hanno abbastanza soldi, non ci sono taglie disponibli ecc.) e si occupa
 di effettuare tutte le modifiche necessarie al saldo dell'utente, numero di taglie dei prodotti ecc. */
-void gestisciAcquisto(nodoListaProdotti** carrello, nodoListaUtenti** listaUtenti, utente* utenteLoggato, prodotto* prodottoDaAcquistare, int* numeroTaglieDisponibili);
+void gestisciAcquisto(nodoCarrello** carrello, char tagliaRichiesta, nodoListaUtenti** listaUtenti, utente* utenteLoggato, prodotto* prodottoDaAcquistare, int* numeroTaglieDisponibili);
 
 
 //FUNZIONI LISTA PRODOTTI
 prodotto* ottieniProdottoDaIndice(nodoListaProdotti* listaProdotti, int posizione);
-void mostraCarrello(nodoListaProdotti* carrello);
 void mostraListaProdotti(nodoListaProdotti* listaProdotti, int indice); //Stampa la lista sotto forma di elenco 
 void stampaListaProdotti(nodoListaProdotti* listaProdotti); //Stampa tutti gli elememti della lista
 nodoListaProdotti* creaNodoListaProdotti(char nomeProdotto[], char caratteristica[], float prezzo, int taglieS, int taglieM, int taglieL);
 nodoListaProdotti* inserisciInCodaListaProdotti(nodoListaProdotti* lista, char nomeProdotto[], char caratterstica[], float prezzo, int taglieS, int taglieM, int taglieL);
 nodoListaProdotti* popolaListaProdotti(nodoListaProdotti* listaProdotti);
 
+//FUNZIONI LISTA CARRELLO
+void mostraProdottiCarrello(nodoCarrello* carrello, float prezzoIniziale);
+nodoCarrello* creaNodoListaCarrello(char nomeProdotto[], char caratteristica[], char tagliaRichiesta, float prezzo);
+nodoCarrello* inserisciInCodaListaCarrello(nodoCarrello* lista, char nomeProdotto[], char caratterstica[], char tagliaRichiesta, float prezzo); 
 
 //FUNZIONI LISTA AMMINISTRATORI
 nodoListaAmministratori* popolaListaAmministratori(nodoListaAmministratori* listaAmministratori);
