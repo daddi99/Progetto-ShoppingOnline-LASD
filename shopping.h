@@ -105,7 +105,7 @@ nodoListaProdotti* popolaListaProdotti(nodoListaProdotti* listaProdotti);
 void gestisciListaDiAttesa(listaDiAttesa** listaDiAttesa, nodoListaProdotti** listaProdotti, nodoCarrello** carrello,utente* utenteLoggato);
 listaDiAttesa* creaListaDiAttesa(); //Crea la lista di attesa come una coda impostando front e rear a NULL
 void inserisciInListaDiAttesa(listaDiAttesa** listaDiAttesa, char nomeProdotto[20], char caratteristica[20], char nomeUtente[20], char taglia);
-void rimuoviElementoListaDiAttesa(listaDiAttesa** listaDiAttesa, nodoListaDiAttesa* frontListaDiAttesa, nodoListaDiAttesa* elemento);
+void rimuoviElementoListaDiAttesa(listaDiAttesa** listaDiAttesa,  nodoListaDiAttesa* elemento);
 void stampaListaDiAttesa(nodoListaDiAttesa* frontlistaDiAttesa);
 
 

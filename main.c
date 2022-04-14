@@ -18,11 +18,7 @@ int main()
     listaProdotti = popolaListaProdotti(listaProdotti);
 
     //DEBUG
-
     inserisciInListaDiAttesa(&listaDiAttesa, "Jeans", "Corto", "Mario", 'L');
-    inserisciInListaDiAttesa(&listaDiAttesa, "Maglietta", "Blu", "daddi", 'S');
-    inserisciInListaDiAttesa(&listaDiAttesa, "Giubbotto", "Nero", "Mario", 'L');
-    inserisciInListaDiAttesa(&listaDiAttesa, "Cappello", "Nero", "daddi", 'L');
 
     //Loop principale della schermata iniziale, permette di poter ritornare a questo punto saltando alla prossima iterazione.
     while (1)

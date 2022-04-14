@@ -438,10 +438,7 @@ void gestisciListaDiAttesa(listaDiAttesa** listaDiAttesa, nodoListaProdotti** li
     int i = 0;
     char sceltaCarrello;
 
-    if(elementoCorrente == NULL)
-        printf("Non sei presente in nessuna lista di attesa.\n");
-    else
-        printf("Sei nella lista di attesa per i seguenti prodotti:\n");
+    printf("Prodotti per i quali sei in una lista di attesa:\n");
 
     //Scorre tutti gli elementi della lista di attesa in modo da trovare a che prodotti è interessato l'utente e li mette in un array
     while (elementoCorrente != NULL)
@@ -479,71 +476,65 @@ void gestisciListaDiAttesa(listaDiAttesa** listaDiAttesa, nodoListaProdotti** li
             //FINALMENTE NOTIFICA L'UTENTE
             if(elementoCorrente->elemento.taglia == 'S')
             {
-                if(prodottoNellaLista->TaglieSdisponibili > 0)
+                if(prodottoNellaLista->TaglieSdisponibili > 0) //Se ora il prodotto è tornato disponibile può aggiungerlo al carrello
+                {
                     printf(VERDE "\nIl prodotto %s %s Taglia %c e' tornato disponibile!%s\n",elementoCorrente->elemento.nomeProdotto,elementoCorrente->elemento.caratteristica,elementoCorrente->elemento.taglia, NORMALE);
+                    printf("Vuoi aggiungerlo al carrello?(s/n) \n");
+                    getchar();
+                    scanf("%c",&sceltaCarrello);
+                }
             }
             else if(elementoCorrente->elemento.taglia == 'M')
             {
                 if(prodottoNellaLista->TaglieMdisponibili > 0)
+                {
                     printf(VERDE "\nIl prodotto %s %s Taglia %c e' tornato disponibile!%s\n",elementoCorrente->elemento.nomeProdotto,elementoCorrente->elemento.caratteristica,elementoCorrente->elemento.taglia, NORMALE);
+                    printf("Vuoi aggiungerlo al carrello?(s/n) \n");
+                    getchar();
+                    scanf("%c",&sceltaCarrello);
+                }
             }   
             else if(elementoCorrente->elemento.taglia == 'L')
             {
                 if(prodottoNellaLista->TaglieLdisponibili > 0)
+                {
                     printf(VERDE "\nIl prodotto %s %s Taglia %c e' tornato disponibile!%s\n",elementoCorrente->elemento.nomeProdotto,elementoCorrente->elemento.caratteristica,elementoCorrente->elemento.taglia, NORMALE);
-            }
-            printf("Vuoi aggiungerlo al carrello?(s/n) \n");
-            getchar();
-            scanf("%c",&sceltaCarrello);
-
+                    printf("Vuoi aggiungerlo al carrello?(s/n) \n");
+                    getchar();
+                    scanf("%c",&sceltaCarrello);
+                }
+            }           
             //Se l'utente preme s il prodotto viene spostato nel carrello
             if(sceltaCarrello == 's' || sceltaCarrello == 'S')
             {
-                stampaListaDiAttesa((*listaDiAttesa)->front);
-                printf("\n");
-                
-                *carrello = inserisciInCodaListaCarrello(*carrello,elementoCorrente->elemento.nomeProdotto, elementoCorrente->elemento.caratteristica, elementoCorrente->elemento.taglia, prodottoNellaLista->prezzo);
-                
-                //Rimuove elemento corrente dalla lista di attesa
-                rimuoviElementoListaDiAttesa(listaDiAttesa,(*listaDiAttesa)->front, elementoCorrente);
-                
-                stampaListaDiAttesa((*listaDiAttesa)->front);
-               
-            }
-                          
+                *carrello = inserisciInCodaListaCarrello(*carrello,elementoCorrente->elemento.nomeProdotto, elementoCorrente->elemento.caratteristica, elementoCorrente->elemento.taglia, prodottoNellaLista->prezzo);   
+                //Rimuove elemento dalla coda
+                rimuoviElementoListaDiAttesa(listaDiAttesa,elementoCorrente);
+            }                       
         }                 
     }
 }
 
 
-void rimuoviElementoListaDiAttesa(listaDiAttesa** listaDiAttesa, nodoListaDiAttesa* frontListaDiAttesa, nodoListaDiAttesa* elemento)
+void rimuoviElementoListaDiAttesa(listaDiAttesa** listaDiAttesa,  nodoListaDiAttesa* elemento)
 {
-    if(listaDiAttesa == NULL)
-        return;
+    if(elemento == (*listaDiAttesa)->front)
+    {
+        (*listaDiAttesa)->front = elemento->next;
+        (*listaDiAttesa)->front->prev = NULL;
+        free(elemento);
+    }
+    else if (elemento == (*listaDiAttesa)->rear)
+    {
+        (*listaDiAttesa)->rear = elemento->prev;
+        (*listaDiAttesa)->rear->next = NULL;
+        free(elemento);
+    }
     else
     {
-        if(elemento == (*listaDiAttesa)->front) //Se l'elemento da eliminare è il front della coda
-        {
-            nodoListaDiAttesa* tmp = (*listaDiAttesa)->front; 
-            (*listaDiAttesa)->front = (*listaDiAttesa)->front->next;
-            (*listaDiAttesa)->front->prev = NULL;
-            free(tmp);
-        }
-        else if(elemento == (*listaDiAttesa) ->rear) //Se l'elemento da eliminare è il rear della coda
-        {
-            nodoListaDiAttesa* tmp = (*listaDiAttesa)->rear;
-            (*listaDiAttesa)->rear = (*listaDiAttesa)->rear->prev;
-            (*listaDiAttesa)->rear->next = NULL;
-            free(tmp);
-        }
-        else if(elemento == frontListaDiAttesa) //Se invece l'elemento è un nodo in mezzo alla coda
-        {
-            nodoListaDiAttesa* tmp = elemento;
-            elemento->prev->next = elemento->next;
-            elemento->next->prev = elemento->prev;
-            free(tmp);
-        }   
-        rimuoviElementoListaDiAttesa(listaDiAttesa, frontListaDiAttesa->next, elemento);   
+        elemento->prev->next = elemento->next;
+        elemento->next->prev = elemento->prev;
+        free(elemento);
     }
 }
 
