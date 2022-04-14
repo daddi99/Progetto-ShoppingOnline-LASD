@@ -3,7 +3,7 @@
 #include <string.h>
 #include "shopping.h"
 
-void latoUtente(utente* utenteLoggato, nodoListaUtenti** listaUtenti, nodoListaProdotti** listaProdotti, nodoCarrello** carrello)
+void latoUtente(utente* utenteLoggato, nodoListaUtenti** listaUtenti, nodoListaProdotti** listaProdotti, nodoCarrello** carrello, listaDiAttesa** listaDiAttesa)
 {
     //Variabili utilizzate per le scelte nei vari menù
     int scelta;
@@ -26,7 +26,8 @@ void latoUtente(utente* utenteLoggato, nodoListaUtenti** listaUtenti, nodoListaP
         printf("2) Preleva fondi\n");
         printf("3) Acquista un prodotto\n");
         printf("4) Visualizza Carrello\n");
-        printf("5) Logout\n");
+        printf("5) Visualizza Notifiche liste di attesa\n");
+        printf("6) Logout\n");
 
         scanf("%d",&scelta);
 
@@ -67,7 +68,7 @@ void latoUtente(utente* utenteLoggato, nodoListaUtenti** listaUtenti, nodoListaP
 
             //Stampa tutte le informazioni del prodotto selezionato
             printf(CIANO "\nINFORMAZIONI PRODOTTO\n" NORMALE);
-            printf("Nome: %s %s\n",prodottoDaAcquistare->nomeProdotto,prodottoDaAcquistare->caratterstica);
+            printf("Nome: %s %s\n",prodottoDaAcquistare->nomeProdotto,prodottoDaAcquistare->caratteristica);
             printf("Prezzo: %.2f euro\n",prodottoDaAcquistare->prezzo);
             printf("Taglie S disponibili: %d\n",prodottoDaAcquistare->TaglieSdisponibili);
             printf("Taglie M disponibili: %d\n",prodottoDaAcquistare->TaglieMdisponibili);
@@ -81,13 +82,13 @@ void latoUtente(utente* utenteLoggato, nodoListaUtenti** listaUtenti, nodoListaP
 
             //Acquista taglia S:
             if(sceltaAcquisto == 1)
-                gestisciAcquisto(carrello, 'S',listaUtenti,utenteLoggato,prodottoDaAcquistare,&(prodottoDaAcquistare->TaglieSdisponibili));
+                gestisciAcquisto(carrello, 'S',listaUtenti, listaDiAttesa, utenteLoggato,prodottoDaAcquistare,&(prodottoDaAcquistare->TaglieSdisponibili));
             //Acquista taglia M:
             else if(sceltaAcquisto  == 2)
-                gestisciAcquisto(carrello, 'M',listaUtenti,utenteLoggato,prodottoDaAcquistare,&(prodottoDaAcquistare->TaglieMdisponibili));
+                gestisciAcquisto(carrello, 'M',listaUtenti, listaDiAttesa, utenteLoggato,prodottoDaAcquistare,&(prodottoDaAcquistare->TaglieMdisponibili));
             //Acquista taglia L:
             else if(sceltaAcquisto == 3)
-                gestisciAcquisto(carrello, 'L',listaUtenti, utenteLoggato,prodottoDaAcquistare,&(prodottoDaAcquistare->TaglieLdisponibili)); 
+                gestisciAcquisto(carrello, 'L',listaUtenti, listaDiAttesa, utenteLoggato,prodottoDaAcquistare,&(prodottoDaAcquistare->TaglieLdisponibili)); 
         }
         //Visualizza carrello:
         else if(scelta == 4)
@@ -111,13 +112,20 @@ void latoUtente(utente* utenteLoggato, nodoListaUtenti** listaUtenti, nodoListaP
                     printf(ROSSO "Il tuo saldo non e' sufficiente per completare l'ordine, effettua una ricarica.\n" NORMALE);
             }
         }
-        //Logout:
+        //Visualizza liste di attesa:
         else if(scelta == 5)
+        {
+            printf(CIANO "\nNOTIFICHE LISTE DI ATTESA\n" NORMALE);
+
+            gestisciListaDiAttesa(listaDiAttesa, listaProdotti, carrello, utenteLoggato);        
+        }
+        //Logout:
+        else if(scelta == 6)
             break;
     }
 }
 
-void gestisciAcquisto(nodoCarrello** carrello, char tagliaRichiesta, nodoListaUtenti** listaUtenti, utente* utenteLoggato, prodotto* prodottoDaAcquistare, int* numeroTaglieDisponibili)
+void gestisciAcquisto(nodoCarrello** carrello, char tagliaRichiesta, nodoListaUtenti** listaUtenti, listaDiAttesa** listaDiAttesa,utente* utenteLoggato, prodotto* prodottoDaAcquistare, int* numeroTaglieDisponibili)
 {
     if(utenteLoggato->saldo >= prodottoDaAcquistare->prezzo && *numeroTaglieDisponibili > 0) //Se l'utente ha abbastanza soldi e c'è almeno una taglia disponibile
     {
@@ -127,18 +135,19 @@ void gestisciAcquisto(nodoCarrello** carrello, char tagliaRichiesta, nodoListaUt
 
         printf(VERDE "Acquisto effettuato con successo!\n" NORMALE);
     }
-    else if(utenteLoggato->saldo < prodottoDaAcquistare->prezzo) //Se l'utente non ha abbastanza soldi
+    else if(utenteLoggato->saldo < prodottoDaAcquistare->prezzo && *numeroTaglieDisponibili > 0) //Se l'utente non ha abbastanza soldi
     {
         printf(ROSSO "Non hai abbastanza fondi per completare l'acquisto, effettua una ricarica.\n" NORMALE);
         //Inserisce il prodotto nella lista carrello
-        *carrello = inserisciInCodaListaCarrello(*carrello,prodottoDaAcquistare->nomeProdotto,prodottoDaAcquistare->caratterstica,tagliaRichiesta, prodottoDaAcquistare->prezzo);
+        *carrello = inserisciInCodaListaCarrello(*carrello,prodottoDaAcquistare->nomeProdotto,prodottoDaAcquistare->caratteristica,tagliaRichiesta, prodottoDaAcquistare->prezzo);
 
         printf(VERDE "Il prodotto desiderato e' stato spostato nel carrello.\n" NORMALE);
     }
     else if(*numeroTaglieDisponibili == 0)  //Se non ci sono abbastanza taglie disponibili
     {
         printf(ROSSO "Impossibile completare l'acquisto perche' la taglia scelta non e' disponibile.\n" NORMALE);
-        // TODO: Aggiungi utente nella lista di attesa
+        //Inserisce l'utente nella lista di attesa con il prodotto e la taglia desiderata
+        inserisciInListaDiAttesa(listaDiAttesa, prodottoDaAcquistare->nomeProdotto, prodottoDaAcquistare->caratteristica, utenteLoggato->nomeUtente, tagliaRichiesta);
         printf(VERDE "Sei stato aggiunto ad una lista d'attesa per tenere traccia della disponibilita'\n" NORMALE);
     }
 }
@@ -253,7 +262,7 @@ prodotto* ottieniProdottoPerNome(nodoListaProdotti* listaProdotti, char nomeProd
     if(listaProdotti == NULL)
         return NULL;
     //Se trova il prodotto nella lista lo ritorna 
-    else if(strcmp(listaProdotti->prodotto.nomeProdotto,nomeProdotto) == 0 && strcmp(listaProdotti->prodotto.caratterstica,caratteristica) == 0)
+    else if(strcmp(listaProdotti->prodotto.nomeProdotto,nomeProdotto) == 0 && strcmp(listaProdotti->prodotto.caratteristica,caratteristica) == 0)
         return &(listaProdotti->prodotto);
     else
         //Procede ricorsivamente sul resto della lista
@@ -274,7 +283,7 @@ void mostraListaProdotti(nodoListaProdotti* listaProdotti, int indice)
     else
     {
         //Stampa la lista in un formato ad elenco, più sensato nell'interfaccia
-        printf("%d) %s %s %.2f euro\n", indice, listaProdotti->prodotto.nomeProdotto,listaProdotti->prodotto.caratterstica,listaProdotti->prodotto.prezzo);
+        printf("%d) %s %s %.2f euro\n", indice, listaProdotti->prodotto.nomeProdotto,listaProdotti->prodotto.caratteristica,listaProdotti->prodotto.prezzo);
 
         mostraListaProdotti(listaProdotti->next,indice + 1);
     }
@@ -287,7 +296,7 @@ void stampaListaProdotti(nodoListaProdotti* listaProdotti)
     else
     {
         //Stampa semplicemente tutti i campi del nodo
-        printf("%s %s %.2f %d %d %d\n",listaProdotti->prodotto.nomeProdotto,listaProdotti->prodotto.caratterstica,listaProdotti->prodotto.prezzo,
+        printf("%s %s %.2f %d %d %d\n",listaProdotti->prodotto.nomeProdotto,listaProdotti->prodotto.caratteristica,listaProdotti->prodotto.prezzo,
             listaProdotti->prodotto.TaglieSdisponibili,listaProdotti->prodotto.TaglieMdisponibili,listaProdotti->prodotto.TaglieLdisponibili);
 
         stampaListaProdotti(listaProdotti->next);
@@ -298,7 +307,7 @@ nodoListaProdotti* creaNodoListaProdotti(char nomeProdotto[], char caratteristic
 {
     nodoListaProdotti* tmp = (nodoListaProdotti*)malloc(sizeof(nodoListaProdotti)); //Alloca memoria per il nuovo nodo
     strcpy(tmp->prodotto.nomeProdotto,nomeProdotto); //Riempie tutti i campi del nuovo nodo con le informazioni in input
-    strcpy(tmp->prodotto.caratterstica,caratteristica);
+    strcpy(tmp->prodotto.caratteristica,caratteristica);
     tmp->prodotto.prezzo = prezzo;
     tmp->prodotto.TaglieSdisponibili = taglieS;
     tmp->prodotto.TaglieMdisponibili = taglieM;
@@ -416,6 +425,186 @@ nodoCarrello* inserisciInCodaListaCarrello(nodoCarrello* lista, char nomeProdott
         return lista;
     }
 }
+
+//FUNZIONI LISTA DI ATTESA
+
+/* Si occupa di fare tutta una serie di controlli per verificare se l'utenteLoggato ha la priorita sui prodotti nella sua lista di attesa e nel
+caso lo notifica se il prodotto è tornato disponibile */
+void gestisciListaDiAttesa(listaDiAttesa** listaDiAttesa, nodoListaProdotti** listaProdotti, nodoCarrello** carrello, utente* utenteLoggato)
+{
+    nodoListaDiAttesa* elementoCorrente = (*listaDiAttesa)->front;
+    prodottoCoda prodottiInteressati[20]; //Vettore che conterrà tutti i prodotti che l'utente ha nella lista di attesa
+    int grandezzaVettore = 0;
+    int i = 0;
+    char sceltaCarrello;
+
+    if(elementoCorrente == NULL)
+        printf("Non sei presente in nessuna lista di attesa.\n");
+    else
+        printf("Sei nella lista di attesa per i seguenti prodotti:\n");
+
+    //Scorre tutti gli elementi della lista di attesa in modo da trovare a che prodotti è interessato l'utente e li mette in un array
+    while (elementoCorrente != NULL)
+    {
+        if(strcmp(elementoCorrente->elemento.nomeUtente,utenteLoggato->nomeUtente) == 0)
+        {
+            printf("- %s %s Taglia %c\n",elementoCorrente->elemento.nomeProdotto, elementoCorrente->elemento.caratteristica,elementoCorrente->elemento.taglia);
+            prodottiInteressati[i] = elementoCorrente->elemento; //Aggiunge il prodotto al vettore
+            i++;
+            grandezzaVettore++; //Tiene traccia di quanti elementi ci sono nel vettore
+        }
+        elementoCorrente = elementoCorrente->next;
+    }
+
+    //Per ogni prodotto va a controllare nella coda se l'utente ha la priorità
+    for(int i=0; i<grandezzaVettore; i++)
+    {
+        elementoCorrente = (*listaDiAttesa)->rear; //Vado al rear della coda ed inizio a scorrere al contrario 
+        //Scorro fin quando non trovo il primo elemento che ha i campi che mi interessano, che sarà quindi quello con piu priorità
+        while(strcmp(elementoCorrente->elemento.nomeProdotto,prodottiInteressati[i].nomeProdotto) != 0 ||
+                strcmp(elementoCorrente->elemento.caratteristica,prodottiInteressati[i].caratteristica) != 0 ||
+                elementoCorrente->elemento.taglia != prodottiInteressati[i].taglia)
+                {
+                    elementoCorrente = elementoCorrente->prev;
+                }
+        
+        //A questo punto ho trovato l'ELEMENTO CON PIU PRIORITA' che corrisponde a quello che mi interessa
+        if(strcmp(elementoCorrente->elemento.nomeUtente,utenteLoggato->nomeUtente) == 0) 
+        {
+            //Se entro in questo if vuol dire che l'utente ha effettivamente la priorità su quel prodotto, quindi deve essere notificato nel caso sia tornato disponibile
+
+             //Si va a prendere il prodotto nella lista prodotti
+            prodotto* prodottoNellaLista = ottieniProdottoPerNome((*listaProdotti),elementoCorrente->elemento.nomeProdotto,elementoCorrente->elemento.caratteristica);
+            
+            //FINALMENTE NOTIFICA L'UTENTE
+            if(elementoCorrente->elemento.taglia == 'S')
+            {
+                if(prodottoNellaLista->TaglieSdisponibili > 0)
+                    printf(VERDE "\nIl prodotto %s %s Taglia %c e' tornato disponibile!%s\n",elementoCorrente->elemento.nomeProdotto,elementoCorrente->elemento.caratteristica,elementoCorrente->elemento.taglia, NORMALE);
+            }
+            else if(elementoCorrente->elemento.taglia == 'M')
+            {
+                if(prodottoNellaLista->TaglieMdisponibili > 0)
+                    printf(VERDE "\nIl prodotto %s %s Taglia %c e' tornato disponibile!%s\n",elementoCorrente->elemento.nomeProdotto,elementoCorrente->elemento.caratteristica,elementoCorrente->elemento.taglia, NORMALE);
+            }   
+            else if(elementoCorrente->elemento.taglia == 'L')
+            {
+                if(prodottoNellaLista->TaglieLdisponibili > 0)
+                    printf(VERDE "\nIl prodotto %s %s Taglia %c e' tornato disponibile!%s\n",elementoCorrente->elemento.nomeProdotto,elementoCorrente->elemento.caratteristica,elementoCorrente->elemento.taglia, NORMALE);
+            }
+            printf("Vuoi aggiungerlo al carrello?(s/n) \n");
+            getchar();
+            scanf("%c",&sceltaCarrello);
+
+            //Se l'utente preme s il prodotto viene spostato nel carrello
+            if(sceltaCarrello == 's' || sceltaCarrello == 'S')
+            {
+                stampaListaDiAttesa((*listaDiAttesa)->front);
+                printf("\n");
+                
+                *carrello = inserisciInCodaListaCarrello(*carrello,elementoCorrente->elemento.nomeProdotto, elementoCorrente->elemento.caratteristica, elementoCorrente->elemento.taglia, prodottoNellaLista->prezzo);
+                
+                //Rimuove elemento corrente dalla lista di attesa
+                rimuoviElementoListaDiAttesa(listaDiAttesa,(*listaDiAttesa)->front, elementoCorrente);
+                
+                stampaListaDiAttesa((*listaDiAttesa)->front);
+               
+            }
+                          
+        }                 
+    }
+}
+
+
+void rimuoviElementoListaDiAttesa(listaDiAttesa** listaDiAttesa, nodoListaDiAttesa* frontListaDiAttesa, nodoListaDiAttesa* elemento)
+{
+    if(listaDiAttesa == NULL)
+        return;
+    else
+    {
+        if(elemento == (*listaDiAttesa)->front) //Se l'elemento da eliminare è il front della coda
+        {
+            nodoListaDiAttesa* tmp = (*listaDiAttesa)->front; 
+            (*listaDiAttesa)->front = (*listaDiAttesa)->front->next;
+            (*listaDiAttesa)->front->prev = NULL;
+            free(tmp);
+        }
+        else if(elemento == (*listaDiAttesa) ->rear) //Se l'elemento da eliminare è il rear della coda
+        {
+            nodoListaDiAttesa* tmp = (*listaDiAttesa)->rear;
+            (*listaDiAttesa)->rear = (*listaDiAttesa)->rear->prev;
+            (*listaDiAttesa)->rear->next = NULL;
+            free(tmp);
+        }
+        else if(elemento == frontListaDiAttesa) //Se invece l'elemento è un nodo in mezzo alla coda
+        {
+            nodoListaDiAttesa* tmp = elemento;
+            elemento->prev->next = elemento->next;
+            elemento->next->prev = elemento->prev;
+            free(tmp);
+        }   
+        rimuoviElementoListaDiAttesa(listaDiAttesa, frontListaDiAttesa->next, elemento);   
+    }
+}
+
+listaDiAttesa* creaListaDiAttesa()
+{
+    listaDiAttesa* tmp = (listaDiAttesa*)malloc(sizeof(listaDiAttesa));
+
+    if(tmp == NULL)
+    {
+        printf("Errore: impossibile allocare memoria per la coda\n");
+        return NULL;
+    }
+
+    tmp->front = NULL; //Imposta sia il fronte che il retro della coda a NULL
+    tmp->rear = NULL;
+
+    return tmp;
+}
+
+void stampaListaDiAttesa(nodoListaDiAttesa* frontlistaDiAttesa)
+{
+    if(frontlistaDiAttesa == NULL)
+        printf("NULL");
+    else
+    {
+        //Stampa semplicemente tutti i campi del nodo
+        printf("%s %s %s %c\n",frontlistaDiAttesa->elemento.nomeProdotto, frontlistaDiAttesa->elemento.caratteristica,frontlistaDiAttesa->elemento.nomeUtente,
+        frontlistaDiAttesa->elemento.taglia);
+
+        stampaListaDiAttesa(frontlistaDiAttesa->next);
+    }    
+}
+
+//Inserisce l'elemento in testa alla lista di attesa utilizzando i doppi puntatori
+void inserisciInListaDiAttesa(listaDiAttesa** listaDiAttesa, char nomeProdotto[20], char caratteristica[20], char nomeUtente[20], char taglia)
+{
+    nodoListaDiAttesa* tmp = (nodoListaDiAttesa*)malloc(sizeof(nodoListaDiAttesa));
+
+    if(tmp == NULL)
+        printf("Errore: impossibile allocare memoria per il nuovo nodo della coda\n");
+    
+    //Riempie tutti i campi del nuovo nodo con le informazioni in input
+    strcpy(tmp->elemento.nomeProdotto, nomeProdotto);
+    strcpy(tmp->elemento.caratteristica,caratteristica);
+    strcpy(tmp->elemento.nomeUtente,nomeUtente);
+    tmp->elemento.taglia = taglia;
+    tmp->next = (*listaDiAttesa)->front;
+    tmp->prev = NULL;
+
+    if((*listaDiAttesa)->front == NULL) //Se la lista di attesa è vuota imposta sia il fronte che il retro al nuovo nodo
+    {
+        (*listaDiAttesa)->front = tmp;
+        (*listaDiAttesa)->rear = tmp;
+    }
+    else    //Se non è vuoto
+    {
+        (*listaDiAttesa)->front->prev = tmp; //Il prev del front diventa il nuovo nodo
+        (*listaDiAttesa)->front = tmp; //Il nuovo nodo diventa il front
+    }
+}
+
 
 //FUNZIONI PER LA LISTA DI AMMINISTRATORI
 

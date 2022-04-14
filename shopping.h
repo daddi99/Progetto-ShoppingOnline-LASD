@@ -26,7 +26,7 @@ typedef struct nodoListaUtenti
 typedef struct prodotto
 {
     char nomeProdotto[20];
-    char caratterstica[20]; //Può essere ad esempio il colore,la misura (es. verde,corto,lungo,rosa ecc..)
+    char caratteristica[20]; //Può essere ad esempio il colore,la misura (es. verde,corto,lungo,rosa ecc..)
     float prezzo;
     int TaglieSdisponibili;
     int TaglieMdisponibili;
@@ -60,16 +60,36 @@ typedef struct nodoCarrello
     struct nodoCarrello* next;
 }nodoCarrello;
 
+typedef struct elementoListaDiAttesa
+{
+    char nomeUtente[20];
+    char nomeProdotto[20];
+    char caratteristica[20];
+    char taglia;
+}prodottoCoda;
+
+typedef struct nodoListaDiAttesa
+{
+    struct elementoListaDiAttesa elemento;
+    struct nodoListaDiAttesa* next;
+    struct nodoListaDiAttesa* prev;
+}nodoListaDiAttesa;
+
+typedef struct listaDiAttesa
+{
+    struct nodoListaDiAttesa* front;
+    struct nodoListaDiAttesa* rear;
+}listaDiAttesa;
 
 //FUNZIONI PER L'INTERFACCIA
 //Si occupa di gestire la schermata di login/registrazione, e ritorna per riferimento l'utente/amministratore che ha fatto l'accesso
 int effettuaLogin(nodoListaUtenti* listaUtenti, nodoListaAmministratori* listaAmministratori,utente* utenteLoggato, amministratore* adminLoggato);
 nodoListaUtenti* effettuaRegistrazione(nodoListaUtenti* listaUtenti); //Dopo aver fatto tutti i controlli aggiunge il nuovo utente alla listaUtenti
 //Gestisce tutto il lato utente dell'applicazione
-void latoUtente(utente* utenteLoggato,nodoListaUtenti** listaUtenti, nodoListaProdotti** listaProdotti, nodoCarrello** carrello);
+void latoUtente(utente* utenteLoggato,nodoListaUtenti** listaUtenti, nodoListaProdotti** listaProdotti, nodoCarrello** carrello, listaDiAttesa** listaDiAttesa);
 /*Gestisce tutti i casi possibili quando si effettua un acquisto (Non si hanno abbastanza soldi, non ci sono taglie disponibli ecc.) e si occupa
 di effettuare tutte le modifiche necessarie al saldo dell'utente, numero di taglie dei prodotti ecc. */
-void gestisciAcquisto(nodoCarrello** carrello, char tagliaRichiesta, nodoListaUtenti** listaUtenti, utente* utenteLoggato, prodotto* prodottoDaAcquistare, int* numeroTaglieDisponibili);
+void gestisciAcquisto(nodoCarrello** carrello, char tagliaRichiesta, nodoListaUtenti** listaUtenti, listaDiAttesa** listaDiAttesa, utente* utenteLoggato, prodotto* prodottoDaAcquistare, int* numeroTaglieDisponibili);
 
 
 //FUNZIONI LISTA PRODOTTI
@@ -80,6 +100,14 @@ void stampaListaProdotti(nodoListaProdotti* listaProdotti); //Stampa tutti gli e
 nodoListaProdotti* creaNodoListaProdotti(char nomeProdotto[], char caratteristica[], float prezzo, int taglieS, int taglieM, int taglieL);
 nodoListaProdotti* inserisciInCodaListaProdotti(nodoListaProdotti* lista, char nomeProdotto[], char caratterstica[], float prezzo, int taglieS, int taglieM, int taglieL);
 nodoListaProdotti* popolaListaProdotti(nodoListaProdotti* listaProdotti);
+
+//FUNZIONI LISTA DI ATTESA (CODA)
+void gestisciListaDiAttesa(listaDiAttesa** listaDiAttesa, nodoListaProdotti** listaProdotti, nodoCarrello** carrello,utente* utenteLoggato);
+listaDiAttesa* creaListaDiAttesa(); //Crea la lista di attesa come una coda impostando front e rear a NULL
+void inserisciInListaDiAttesa(listaDiAttesa** listaDiAttesa, char nomeProdotto[20], char caratteristica[20], char nomeUtente[20], char taglia);
+void rimuoviElementoListaDiAttesa(listaDiAttesa** listaDiAttesa, nodoListaDiAttesa* frontListaDiAttesa, nodoListaDiAttesa* elemento);
+void stampaListaDiAttesa(nodoListaDiAttesa* frontlistaDiAttesa);
+
 
 //FUNZIONI LISTA CARRELLO
 //Si occupa di far acquistare TUTTO il contenuto del carrello, modificando opportunamente tutti i campi. Successivamente dealloca la lista Carrello
