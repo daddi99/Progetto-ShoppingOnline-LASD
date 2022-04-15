@@ -104,6 +104,7 @@ nodoListaProdotti* creaNodoListaProdotti(char nomeProdotto[], char caratteristic
 nodoListaProdotti* inserisciInCodaListaProdotti(nodoListaProdotti* lista, char nomeProdotto[], char caratterstica[], float prezzo, int taglieS, int taglieM, int taglieL);
 nodoListaProdotti* popolaListaProdotti(nodoListaProdotti* listaProdotti);
 
+
 //FUNZIONI LISTA DI ATTESA (CODA)
 void gestisciListaDiAttesa(listaDiAttesa** listaDiAttesa, nodoListaProdotti** listaProdotti, nodoCarrello** carrello,utente* utenteLoggato);
 listaDiAttesa* creaListaDiAttesa(); //Crea la lista di attesa come una coda impostando front e rear a NULL
@@ -113,13 +114,13 @@ void stampaListaDiAttesa(nodoListaDiAttesa* frontlistaDiAttesa);
 listaDiAttesa* popolaListaDiAttesa(listaDiAttesa* listaDiAttesa);
 
 
-
 //FUNZIONI LISTA CARRELLO
 //Si occupa di far acquistare TUTTO il contenuto del carrello, modificando opportunamente tutti i campi. Successivamente dealloca la lista Carrello
 void acquistaCarrello(utente* utenteLoggato, nodoListaUtenti** listaUtenti, nodoCarrello** carrello, nodoListaProdotti** listaProdotti);
 float mostraProdottiCarrello(nodoCarrello* carrello, float prezzoIniziale); //Stampa il carrello e ritorna il prezzo totale
 nodoCarrello* creaNodoListaCarrello(char nomeProdotto[], char caratteristica[], char tagliaRichiesta, float prezzo);
 nodoCarrello* inserisciInCodaListaCarrello(nodoCarrello* lista, char nomeProdotto[], char caratterstica[], char tagliaRichiesta, float prezzo); 
+
 
 //FUNZIONI LISTA AMMINISTRATORI
 nodoListaAmministratori* popolaListaAmministratori(nodoListaAmministratori* listaAmministratori);

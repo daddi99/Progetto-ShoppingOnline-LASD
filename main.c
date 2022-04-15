@@ -21,9 +21,7 @@ int main()
     //Loop principale della schermata iniziale, permette di poter ritornare a questo punto saltando alla prossima iterazione.
     while (1)
     {
-        stampaListaDiAttesa(listaDiAttesa->front);
-
-        //Determina in quale lato dell'applicazione entrare e ritorna per riferimento l'utente oppure l'amministratore
+         //Determina in quale lato dell'applicazione entrare e ritorna per riferimento l'utente oppure l'amministratore
         areaDiAccesso = effettuaLogin(listaUtenti, listaAmministratori, &utenteLoggato, &adminLoggato); 
 
         //REGISTRAZONE:
@@ -43,6 +41,8 @@ int main()
         //lATO AMMINISTRAZIONE:
         else if(areaDiAccesso == 2)
         {
+            /* Avvia la funzioni che gestisce il lato amministrazione. Permette di modificare il numero di taglie disponibili per un
+            prodotto e di aggiungere nuovi prodotti al catalogo */
             LatoAmministrazione(&adminLoggato, &listaProdotti);
         }
     }

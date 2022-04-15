@@ -191,13 +191,15 @@ void LatoAmministrazione(amministratore* adminLoggato, nodoListaProdotti** lista
                 printf("\nInserire il numero di taglie S da AGGIUNGERE: ");
                 scanf("%d",&nuoveTaglie);
                 prodottoDaModificare->TaglieSdisponibili += nuoveTaglie; //Incrementa il numero di taglie del prodotto selezionato
+                printf(VERDE "\nModifica effettuata con successo!\n" NORMALE);
             }
             //Modifica taglie M: 
             else if(sceltaTaglia == 2)
             {
                 printf("\nInserire il numero di taglie M da AGGIUNGERE: ");
                 scanf("%d",&nuoveTaglie);
-                prodottoDaModificare->TaglieMdisponibili += nuoveTaglie; 
+                prodottoDaModificare->TaglieMdisponibili += nuoveTaglie;
+                printf(VERDE "\nModifica effettuata con successo!\n" NORMALE); 
             }
             //Modifica taglie L: 
             else if(sceltaTaglia == 3)
@@ -205,6 +207,7 @@ void LatoAmministrazione(amministratore* adminLoggato, nodoListaProdotti** lista
                 printf("\nInserire il numero di taglie L da AGGIUNGERE: ");
                 scanf("%d",&nuoveTaglie);
                 prodottoDaModificare->TaglieLdisponibili += nuoveTaglie;
+                printf(VERDE "\nModifica effettuata con successo!\n" NORMALE);
             }
         }
         
@@ -238,7 +241,7 @@ void LatoAmministrazione(amministratore* adminLoggato, nodoListaProdotti** lista
                 inserisciInCodaListaProdotti(*listaProdotti,nomeNuovoProdotto, caratteristicaNuovoProdotto, prezzoNuovoProdotto, taglieSnuovoProdotto,
                 taglieMnuovoProdotto, taglieLnuovoProdotto);
 
-                printf(VERDE "\nProdotto aggiunto correttamente\n" VERDE);
+                printf(VERDE "\nProdotto aggiunto correttamente\n" NORMALE);
             }
         }
 
