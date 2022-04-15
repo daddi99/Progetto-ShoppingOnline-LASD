@@ -87,6 +87,8 @@ int effettuaLogin(nodoListaUtenti* listaUtenti, nodoListaAmministratori* listaAm
 nodoListaUtenti* effettuaRegistrazione(nodoListaUtenti* listaUtenti); //Dopo aver fatto tutti i controlli aggiunge il nuovo utente alla listaUtenti
 //Gestisce tutto il lato utente dell'applicazione
 void latoUtente(utente* utenteLoggato,nodoListaUtenti** listaUtenti, nodoListaProdotti** listaProdotti, nodoCarrello** carrello, listaDiAttesa** listaDiAttesa);
+//Gestisce tutto il lato amministrazione dell'applicazione
+void LatoAmministrazione(amministratore* adminLoggato, nodoListaProdotti** listaProdotti);
 /*Gestisce tutti i casi possibili quando si effettua un acquisto (Non si hanno abbastanza soldi, non ci sono taglie disponibli ecc.) e si occupa
 di effettuare tutte le modifiche necessarie al saldo dell'utente, numero di taglie dei prodotti ecc. */
 void gestisciAcquisto(nodoCarrello** carrello, char tagliaRichiesta, nodoListaUtenti** listaUtenti, listaDiAttesa** listaDiAttesa, utente* utenteLoggato, prodotto* prodottoDaAcquistare, int* numeroTaglieDisponibili);
@@ -96,6 +98,7 @@ void gestisciAcquisto(nodoCarrello** carrello, char tagliaRichiesta, nodoListaUt
 prodotto* ottieniProdottoPerNome(nodoListaProdotti* listaProdotti, char nomeProdotto[], char caratteristica[]);
 prodotto* ottieniProdottoDaIndice(nodoListaProdotti* listaProdotti, int posizione);
 void mostraListaProdotti(nodoListaProdotti* listaProdotti, int indice); //Stampa la lista sotto forma di elenco 
+void mostraListaProdottiAdmin(nodoListaProdotti* listaProdotti, int indice); //Stampa la lista sotto forma di elenco ma senza prezzo
 void stampaListaProdotti(nodoListaProdotti* listaProdotti); //Stampa tutti gli elememti della lista
 nodoListaProdotti* creaNodoListaProdotti(char nomeProdotto[], char caratteristica[], float prezzo, int taglieS, int taglieM, int taglieL);
 nodoListaProdotti* inserisciInCodaListaProdotti(nodoListaProdotti* lista, char nomeProdotto[], char caratterstica[], float prezzo, int taglieS, int taglieM, int taglieL);

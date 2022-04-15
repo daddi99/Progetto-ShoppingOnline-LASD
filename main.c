@@ -41,13 +41,7 @@ int main()
         //lATO AMMINISTRAZIONE:
         else if(areaDiAccesso == 2)
         {
-            printf("LATO AMMINISTRAZIONE\n");
-
-            prodotto* pantaloneRosa = ottieniProdottoPerNome(listaProdotti,"Pantalone","Rosa");
-            pantaloneRosa->TaglieSdisponibili++;
+            LatoAmministrazione(&adminLoggato, &listaProdotti);
         }
-
     }
-    
-
 }
