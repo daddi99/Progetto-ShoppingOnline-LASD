@@ -16,9 +16,7 @@ int main()
     listaUtenti = popolaListaUtenti(listaUtenti);
     listaAmministratori = popolaListaAmministratori(listaAmministratori);
     listaProdotti = popolaListaProdotti(listaProdotti);
-
-    //DEBUG
-    inserisciInListaDiAttesa(&listaDiAttesa, "Jeans", "Corto", "Mario", 'L');
+    listaDiAttesa = popolaListaDiAttesa(listaDiAttesa);
 
     //Loop principale della schermata iniziale, permette di poter ritornare a questo punto saltando alla prossima iterazione.
     while (1)
@@ -44,6 +42,9 @@ int main()
         else if(areaDiAccesso == 2)
         {
             printf("LATO AMMINISTRAZIONE\n");
+
+            prodotto* pantaloneRosa = ottieniProdottoPerNome(listaProdotti,"Pantalone","Rosa");
+            pantaloneRosa->TaglieSdisponibili++;
         }
 
     }

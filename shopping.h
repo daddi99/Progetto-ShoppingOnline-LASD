@@ -107,6 +107,7 @@ listaDiAttesa* creaListaDiAttesa(); //Crea la lista di attesa come una coda impo
 void inserisciInListaDiAttesa(listaDiAttesa** listaDiAttesa, char nomeProdotto[20], char caratteristica[20], char nomeUtente[20], char taglia);
 void rimuoviElementoListaDiAttesa(listaDiAttesa** listaDiAttesa,  nodoListaDiAttesa* elemento);
 void stampaListaDiAttesa(nodoListaDiAttesa* frontlistaDiAttesa);
+listaDiAttesa* popolaListaDiAttesa(listaDiAttesa* listaDiAttesa);
 
 
 //FUNZIONI LISTA CARRELLO

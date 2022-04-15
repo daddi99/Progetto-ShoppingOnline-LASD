@@ -596,6 +596,23 @@ void inserisciInListaDiAttesa(listaDiAttesa** listaDiAttesa, char nomeProdotto[2
     }
 }
 
+listaDiAttesa* popolaListaDiAttesa(listaDiAttesa* listaDiAttesa)
+{
+    FILE* fileListaDiAttesa = fopen("listaDiAttesa.txt","r"); //Apre il file listaDiAttesa.txt in modalità lettura
+
+    char nomeProdottoTmp[20], caratteristicaTmp[20];    //Variabili temporanee per memorizzare il contenuto della fscanf
+    char nomeUtenteTmp[20];
+    char tagliaTmp;
+
+    //Fin quando trova righe nel file listaDiAttesa.txt
+    while(fscanf(fileListaDiAttesa,"%s %s %s %c",nomeUtenteTmp, nomeProdottoTmp, caratteristicaTmp, &tagliaTmp) == 4) 
+    {
+        inserisciInListaDiAttesa(&listaDiAttesa, nomeProdottoTmp, caratteristicaTmp, nomeUtenteTmp, tagliaTmp);
+    }
+    fclose(fileListaDiAttesa);
+
+    return listaDiAttesa;
+}
 
 //FUNZIONI PER LA LISTA DI AMMINISTRATORI
 
