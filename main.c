@@ -21,6 +21,8 @@ int main()
     //Loop principale della schermata iniziale, permette di poter ritornare a questo punto saltando alla prossima iterazione.
     while (1)
     {
+        stampaListaDiAttesa(listaDiAttesa->front);
+
         //Determina in quale lato dell'applicazione entrare e ritorna per riferimento l'utente oppure l'amministratore
         areaDiAccesso = effettuaLogin(listaUtenti, listaAmministratori, &utenteLoggato, &adminLoggato); 
 

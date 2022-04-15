@@ -1,4 +1,4 @@
-Maglietta Blu 10.50 10 8 20
+Maglietta Blu 10.50 0 8 20
 Jeans Corto 22 7 10 22
 Giubbotto Nero 45.99 1 22 13
 Pantalone Rosa 20.49 0 5 2

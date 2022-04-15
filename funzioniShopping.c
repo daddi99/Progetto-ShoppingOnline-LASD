@@ -137,9 +137,16 @@ void LatoAmministrazione(amministratore* adminLoggato, nodoListaProdotti** lista
     int scelta;
     int sceltaProdotto;
     int sceltaTaglia;
+    int sceltaNuovoProdotto;
+
     int nuoveTaglie; //Memorizza il numero di taglie che l'admin vuole aggiungere
 
     prodotto* prodottoDaModificare;
+
+    //Variabili che contengono i campi del nuovo prodotto da aggiungere al catalogo
+    char nomeNuovoProdotto[20], caratteristicaNuovoProdotto[20];
+    float prezzoNuovoProdotto;
+    int taglieSnuovoProdotto, taglieMnuovoProdotto, taglieLnuovoProdotto;
 
     //Loop principale del lato amministrazione
     while (1)
@@ -204,7 +211,35 @@ void LatoAmministrazione(amministratore* adminLoggato, nodoListaProdotti** lista
         //Aggiungi nuovo prodotto:
         else if(scelta == 2)
         {
+            printf(CIANO "\nAGGIUNGI PRODOTTO AL CATALOGO\n" NORMALE);
 
+            printf("1) Aggiungi nuovo prodotto\n");
+            printf("2) Annulla\n");
+            scanf("%d",&sceltaNuovoProdotto);
+
+            //Aggiungi nuovo prodotto:
+            if(sceltaNuovoProdotto == 1)
+            {
+                //Fa inserire all'amministratore tutti i campi necessari per creare un prodotto 
+                printf("\nNome Prodotto: ");
+                scanf("%s",nomeNuovoProdotto);
+                printf("Caratteristica (es. Corto,Verde,Largo ecc..): ");
+                scanf("%s",caratteristicaNuovoProdotto);
+                printf("Prezzo in euro (es. 12.99): ");
+                scanf("%f",&prezzoNuovoProdotto);
+                printf("Numero di taglie S disponibili: ");
+                scanf("%d",&taglieSnuovoProdotto);
+                printf("Numero di taglie M disponibili: ");
+                scanf("%d",&taglieMnuovoProdotto);
+                printf("Numero di taglie L disponibili: ");
+                scanf("%d",&taglieLnuovoProdotto);
+                
+                //Inserisce il nuovo prodotto nella lista di prodotti
+                inserisciInCodaListaProdotti(*listaProdotti,nomeNuovoProdotto, caratteristicaNuovoProdotto, prezzoNuovoProdotto, taglieSnuovoProdotto,
+                taglieMnuovoProdotto, taglieLnuovoProdotto);
+
+                printf(VERDE "\nProdotto aggiunto correttamente\n" VERDE);
+            }
         }
 
         //Logout:
@@ -586,6 +621,16 @@ void gestisciListaDiAttesa(listaDiAttesa** listaDiAttesa, nodoListaProdotti** li
                     printf("Vuoi aggiungerlo al carrello?(s/n) \n");
                     getchar();
                     scanf("%c",&sceltaCarrello);
+
+                    //Se l'utente preme s il prodotto viene spostato nel carrello e l'utente viene tolto dalla lista di attesa
+                    if(sceltaCarrello == 's' || sceltaCarrello == 'S')
+                    {
+                        *carrello = inserisciInCodaListaCarrello(*carrello,elementoCorrente->elemento.nomeProdotto, elementoCorrente->elemento.caratteristica, elementoCorrente->elemento.taglia, prodottoNellaLista->prezzo);   
+                        rimuoviElementoListaDiAttesa(listaDiAttesa,elementoCorrente);
+                    }
+                    //Se l'utente preme n allora vuol dire che non è piu interessato al prodotto, quindi viene solo tolto dalla lista di attesa
+                    else if(sceltaCarrello == 'n' || sceltaCarrello == 'N')
+                        rimuoviElementoListaDiAttesa(listaDiAttesa,elementoCorrente);  
                 }
             }
             else if(elementoCorrente->elemento.taglia == 'M')
@@ -596,6 +641,16 @@ void gestisciListaDiAttesa(listaDiAttesa** listaDiAttesa, nodoListaProdotti** li
                     printf("Vuoi aggiungerlo al carrello?(s/n) \n");
                     getchar();
                     scanf("%c",&sceltaCarrello);
+
+                    //Se l'utente preme s il prodotto viene spostato nel carrello e l'utente viene tolto dalla lista di attesa
+                    if(sceltaCarrello == 's' || sceltaCarrello == 'S')
+                    {
+                        *carrello = inserisciInCodaListaCarrello(*carrello,elementoCorrente->elemento.nomeProdotto, elementoCorrente->elemento.caratteristica, elementoCorrente->elemento.taglia, prodottoNellaLista->prezzo);   
+                        rimuoviElementoListaDiAttesa(listaDiAttesa,elementoCorrente);
+                    }
+                    //Se l'utente preme n allora vuol dire che non è piu interessato al prodotto, quindi viene solo tolto dalla lista di attesa
+                    else if(sceltaCarrello == 'n' || sceltaCarrello == 'N')
+                        rimuoviElementoListaDiAttesa(listaDiAttesa,elementoCorrente);  
                 }
             }   
             else if(elementoCorrente->elemento.taglia == 'L')
@@ -606,21 +661,21 @@ void gestisciListaDiAttesa(listaDiAttesa** listaDiAttesa, nodoListaProdotti** li
                     printf("Vuoi aggiungerlo al carrello?(s/n) \n");
                     getchar();
                     scanf("%c",&sceltaCarrello);
+
+                    //Se l'utente preme s il prodotto viene spostato nel carrello e l'utente viene tolto dalla lista di attesa
+                    if(sceltaCarrello == 's' || sceltaCarrello == 'S')
+                    {
+                        *carrello = inserisciInCodaListaCarrello(*carrello,elementoCorrente->elemento.nomeProdotto, elementoCorrente->elemento.caratteristica, elementoCorrente->elemento.taglia, prodottoNellaLista->prezzo);   
+                        rimuoviElementoListaDiAttesa(listaDiAttesa,elementoCorrente);
+                    }
+                    //Se l'utente preme n allora vuol dire che non è piu interessato al prodotto, quindi viene solo tolto dalla lista di attesa
+                    else if(sceltaCarrello == 'n' || sceltaCarrello == 'N')
+                        rimuoviElementoListaDiAttesa(listaDiAttesa,elementoCorrente);  
                 }
-            }           
-            //Se l'utente preme s il prodotto viene spostato nel carrello e l'utente viene tolto dalla lista di attesa
-            if(sceltaCarrello == 's' || sceltaCarrello == 'S')
-            {
-                *carrello = inserisciInCodaListaCarrello(*carrello,elementoCorrente->elemento.nomeProdotto, elementoCorrente->elemento.caratteristica, elementoCorrente->elemento.taglia, prodottoNellaLista->prezzo);   
-                rimuoviElementoListaDiAttesa(listaDiAttesa,elementoCorrente);
-            }
-            //Se l'utente preme n allora vuol dire che non è piu interessato al prodotto, quindi viene solo tolto dalla lista di attesa
-            else if(sceltaCarrello == 'n' || sceltaCarrello == 'N')
-                rimuoviElementoListaDiAttesa(listaDiAttesa,elementoCorrente);              
+            }                                   
         }                 
     }
 }
-
 
 void rimuoviElementoListaDiAttesa(listaDiAttesa** listaDiAttesa,  nodoListaDiAttesa* elemento)
 {

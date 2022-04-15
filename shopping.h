@@ -113,6 +113,7 @@ void stampaListaDiAttesa(nodoListaDiAttesa* frontlistaDiAttesa);
 listaDiAttesa* popolaListaDiAttesa(listaDiAttesa* listaDiAttesa);
 
 
+
 //FUNZIONI LISTA CARRELLO
 //Si occupa di far acquistare TUTTO il contenuto del carrello, modificando opportunamente tutti i campi. Successivamente dealloca la lista Carrello
 void acquistaCarrello(utente* utenteLoggato, nodoListaUtenti** listaUtenti, nodoCarrello** carrello, nodoListaProdotti** listaProdotti);
