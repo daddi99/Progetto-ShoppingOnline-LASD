@@ -3,4 +3,5 @@ Jeans Corto 22.00 7 10 22
 Giubbotto Nero 45.99 1 22 13
 Pantalone Rosa 20.49 0 4 9
 Cappello Nero 10.99 0 4 8
-Costume Mimetico 14.99 1 5 7
+Costume Mimetico 14.99 9 5 7
+Camicia Bianca 37.99 3 7 12

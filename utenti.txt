@@ -1,10 +1,6 @@
-pico pallino 100.50
-mario penna 1050.00
-daddi pass 2.26
-silvia stranieri 500.00
-stefy isabel 200.78
-max stefy 120.78
-manu sold 0.00
-max brandi 0.00
-elon musk 0.00
-luigi pass5 50.00
+pinco pallino 100.00
+Luca password 25.00
+daddi pass 52.26
+tonino3 ciao 500.00
+stefy pass45 200.78
+elon musk 10000.78

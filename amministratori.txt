@@ -1,3 +1,4 @@
-admin       pass
-daddiadmin  passdaddi
-franco      pass3
+admin pass
+daddiadmin passdaddi
+franco pass123
+peppe ciao12
