@@ -140,5 +140,11 @@ int ricercaUtentePerNome(nodoListaUtenti* listaUtenti, char nomeUtente[]);
 //Utilizza il doppio puntatore in modo da modificare direttamente il saldo dell'utente nella lista senza doverla ritornare
 void modificaSaldoNellaLista(nodoListaUtenti** listaUtenti, char nomeUtente[], float nuovoSaldo);
 
+//FUNZIONI PERSISTENZA DEI DATI
+void aggiornaFileUtenti(nodoListaUtenti* listaUtenti);
+void aggiornaFileProdotti(nodoListaProdotti* listaProdotti);
+void aggiornaFileListaDiAttesa(nodoListaDiAttesa* rearListaDiAttesa);
+
+
 
 #endif

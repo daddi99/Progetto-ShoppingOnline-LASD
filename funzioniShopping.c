@@ -128,6 +128,11 @@ void latoUtente(utente* utenteLoggato, nodoListaUtenti** listaUtenti, nodoListaP
         //Logout:
         else if(scelta == 6)
             break;
+
+        //Riscrive tutti i cambiamenti fatti alle struttrure dati nei rispettivi file, in modo da renderli persistenti.
+        aggiornaFileUtenti(*listaUtenti);
+        aggiornaFileProdotti(*listaProdotti);
+        aggiornaFileListaDiAttesa((*listaDiAttesa)->rear);
     }
 }
 
@@ -248,6 +253,9 @@ void LatoAmministrazione(amministratore* adminLoggato, nodoListaProdotti** lista
         //Logout:
         else if(scelta == 3)
             break;  //Esce dal ciclo infinito e torna all inizio del main, quindi alla schermata di accesso
+    
+        //Effettua i cambiamenti fatte alle scorte anche sul file, in modo da renderli persistenti
+        aggiornaFileProdotti(*listaProdotti);
     }
     
 }
@@ -305,7 +313,7 @@ nodoListaUtenti* effettuaRegistrazione(nodoListaUtenti* listaUtenti)
                 listaUtenti = inserisciInCodaListaUtenti(listaUtenti, nomeUtente, password,0); //Inserisce il nuovo utente nella lista
                 printf(VERDE "Registrazione effettuata correttamente\n" NORMALE);
 
-                fprintf(fileUtenti,"\n%s %s %.2f",nomeUtente, password, 0); //Scrive il nuovo utente nel file utenti.txt
+                fprintf(fileUtenti,"%s %s %.2f\n",nomeUtente, password, 0); //Scrive il nuovo utente nel file utenti.txt
                 fclose(fileUtenti);
                 return listaUtenti;
             }
@@ -329,6 +337,7 @@ int effettuaLogin(nodoListaUtenti* listaUtenti,nodoListaAmministratori* listaAmm
     printf("1) Accedi come utente\n");
     printf("2) Accedi come amministratore\n");
     printf("3) Non hai un account? Registrati\n");
+    printf("4) Esci\n");
     scanf("%d",&scelta);
 
     //Accedi come utente:
@@ -376,9 +385,10 @@ int effettuaLogin(nodoListaUtenti* listaUtenti,nodoListaAmministratori* listaAmm
     }
     //Registrati:
     else if(scelta == 3)
-    {
         return 0;
-    }
+    //Esci:
+    else if(scelta == 4)
+        return -1;
 }
 
 //-----------------------------------------------------------------------//
@@ -489,6 +499,7 @@ nodoListaProdotti* popolaListaProdotti(nodoListaProdotti* listaProdotti)
     return listaProdotti;
 }
 
+//-----------------------------------------------------------------------//
 //FUNZIONI LISTA CARRELLO
 
 /*Scorre tutta la lista carrello: Ad ogni iterazione si ricava il corrispondente prodotto nella ListaProdotti, successivamente va a 
@@ -568,6 +579,7 @@ nodoCarrello* inserisciInCodaListaCarrello(nodoCarrello* lista, char nomeProdott
     }
 }
 
+//-----------------------------------------------------------------------//
 //FUNZIONI LISTA DI ATTESA
 
 /* Si occupa di fare tutta una serie di controlli per verificare se l'utenteLoggato ha la priorita sui prodotti nella sua lista di attesa e nel
@@ -778,6 +790,7 @@ listaDiAttesa* popolaListaDiAttesa(listaDiAttesa* listaDiAttesa)
     return listaDiAttesa;
 }
 
+//-----------------------------------------------------------------------//
 //FUNZIONI PER LA LISTA DI AMMINISTRATORI
 
 //Funzione ricorsiva che ricerca un amministratore nella lista di amministratori
@@ -846,7 +859,9 @@ nodoListaAmministratori* popolaListaAmministratori(nodoListaAmministratori* list
     return listaAmministratori;
 }
 
+//-----------------------------------------------------------------------//
 //FUNZIONI PER LA LISTA DI UTENTI
+
 //Funzione ricosiva che utlizza il doppio puntatore per modificare direttamente il saldo dell'utente all'interno della lista senza doverla ritornare
 void modificaSaldoNellaLista(nodoListaUtenti** listaUtenti, char nomeUtente[], float nuovoSaldo)
 {
@@ -939,4 +954,51 @@ void stampaListaUtenti(nodoListaUtenti* listaUtenti)
         printf("%s %s %.2f\n",listaUtenti->utente.nomeUtente,listaUtenti->utente.password, listaUtenti->utente.saldo);
         stampaListaUtenti(listaUtenti->next);
     }    
+}
+
+//-----------------------------------------------------------------------//
+//FUNZIONI PER LA PERSISTENZA DEI DATI
+
+void aggiornaFileUtenti(nodoListaUtenti* listaUtenti)
+{
+    FILE* fileUtenti = fopen("utenti.txt","w"); //Apre il file in modalità scrittura
+
+    while(listaUtenti != NULL)
+    {
+        //Scrive il contenuto del nodo corrente in una riga del file
+        fprintf(fileUtenti, "%s %s %.2f\n",listaUtenti->utente.nomeUtente,listaUtenti->utente.password,listaUtenti->utente.saldo);
+        listaUtenti = listaUtenti->next;
+    }
+    fclose(fileUtenti);
+}
+
+void aggiornaFileProdotti(nodoListaProdotti* listaProdotti)
+{
+    FILE* fileProdotti = fopen("prodotti.txt","w"); //Apre il file prodotti.txt in modalità scrittura
+
+    while(listaProdotti != NULL)
+    {
+        //Scrive il contenuto del nodo corrente in una riga del file
+        fprintf(fileProdotti, "%s %s %.2f %d %d %d\n",listaProdotti->prodotto.nomeProdotto,listaProdotti->prodotto.caratteristica,
+        listaProdotti->prodotto.prezzo,listaProdotti->prodotto.TaglieSdisponibili, listaProdotti->prodotto.TaglieMdisponibili, listaProdotti->prodotto.TaglieLdisponibili);
+    
+        listaProdotti = listaProdotti->next;
+    }
+    fclose(fileProdotti);
+}
+
+void aggiornaFileListaDiAttesa(nodoListaDiAttesa* rearListaDiAttesa)
+{
+    FILE* fileListaDiAttesa = fopen("listaDiAttesa.txt","w");
+
+    while(rearListaDiAttesa != NULL)
+    {
+        //Scrive il contenuto del nodo corrente in una riga del file
+        fprintf(fileListaDiAttesa,"%s %s %s %c\n",rearListaDiAttesa->elemento.nomeUtente, rearListaDiAttesa->elemento.nomeProdotto,
+        rearListaDiAttesa->elemento.caratteristica, rearListaDiAttesa->elemento.taglia);
+
+        //Scorre la lista al contrario per rispettare l'ordine di priorità nella coda, infatti in cima al file elementi più in alto nel file hanno maggiore prioritò
+        rearListaDiAttesa = rearListaDiAttesa->prev;
+    }
+    fclose(fileListaDiAttesa);
 }

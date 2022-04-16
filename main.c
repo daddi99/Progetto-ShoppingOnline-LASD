@@ -45,5 +45,9 @@ int main()
             prodotto e di aggiungere nuovi prodotti al catalogo */
             LatoAmministrazione(&adminLoggato, &listaProdotti);
         }
+        //Esci:
+        else if(areaDiAccesso = -1)
+            break;
     }
+    return 0;
 }
